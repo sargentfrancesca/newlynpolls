@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+{% import "_macros.html" as macros %}
+
+{% block title %}Prompt{% endblock %}
+
+{% block page_content %}
+<ul class="posts">
+    <li class="post">
+        <div class="post-thumbnail">
+        </div>
+        <div class="post-content">
+            <div class="post-body">
+            	{{ prompt.text }}
+
+            	{% if prompt.promptevents %}
+            	<ul><strong> Prompt Events </strong>
+            		{% for e in prompt.promptevents %}
+            			<li><a href="{{ url_for('.event', id=e.event.id) }}">{{ e.event.date }} @ {{ e.event.location }}</a></li>
+            		{% endfor %}
+            	</ul>
+            	{% endif %}
+            </div>
+           
+        </div>
+        <div class="post-footer">
+            {% if current_user.is_administrator() %}
+            <a href="{{ url_for('.editprompt', id=prompt.id) }}">
+                <span class="label label-danger">Edit Text</span>
+            </a>
+            {% endif %}
+        </div>
+    </li>
+</ul>
+{% endblock %}

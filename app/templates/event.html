@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+{% import "_macros.html" as macros %}
+
+{% block title %}Event{% endblock %}
+
+{% block page_content %}
+
+<ul class="posts">
+    <li class="post">
+        <div class="post-thumbnail">
+        </div>
+        <div class="post-content">
+            <div class="post-date">created {{ moment(event.timestamp).fromNow() }}</div>
+            <div class="post-author">{{ event.date }} @ {{ event.location }}</div>
+            <div class="post-body">
+            	{% if event.prompts.count() > 0 %}
+            	<strong>Event Prompts</strong><br/>
+               {% for promptev in event.prompts %}
+               		{{ promptev.prompt.text }}<br/>
+               {% endfor %}
+               {% endif %}
+            </div>
+            <div class="post-footer">
+                {% if current_user == event.user %}
+                <a href="{{ url_for('.editevent', id=event.id) }}">
+                    <span class="label label-primary">Edit</span>
+                </a>
+                {% elif current_user.is_administrator() %}
+                <a href="{{ url_for('.editevent', id=event.id) }}">
+                    <span class="label label-danger">Edit [Admin]</span>
+                </a>
+                {% endif %}
+            </div>
+        </div>
+    </li>
+</ul>
+
+{% endblock %}
