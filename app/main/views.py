@@ -199,6 +199,34 @@ def post(id):
     return render_template('post.html', posts=[post], form=form,
                            comments=comments, pagination=pagination)
 
+@main.route('/edit/<int:id>', methods=['GET', 'POST'])
+def editpost(id):
+    post = Post.query.get_or_404(id)
+    form = PostForm()
+    if current_user.can(Permission.WRITE_ARTICLES) and \
+            form.validate_on_submit():
+
+        post.name = form.name.data
+        post.age = form.age.data
+        post.gender = form.gender.data
+        post.body = form.body.data
+        post.passion = form.passion.data        
+        post.user=current_user._get_current_object()
+        post.platform = request.user_agent.platform
+        post.browser = request.user_agent.browser
+
+        db.session.add(post)
+        return redirect(url_for('.index'))
+
+    
+    form.name.data = post.name
+    form.age.data = post.age
+    form.gender.data = post.gender
+    form.body.data = post.body
+    form.passion.data = post.passion
+
+    return render_template('edit_post.html', form=form)
+
 
 @main.route('/edit/<int:id>', methods=['GET', 'POST'])
 @login_required

@@ -5,10 +5,11 @@
 {% block title %}Poll{% endblock %}
 
 {% block page_content %}
-           
+   {% if post %}        
     <div class="post-body">
             {{ post.body }}
     </div>
+    {% endif *}
 
 
 {% endblock %}
