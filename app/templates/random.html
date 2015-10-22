@@ -1,0 +1,29 @@
+{% extends "plain_base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+{% import "_macros.html" as macros %}
+
+{% block title %}Poll{% endblock %}
+
+{% block page_content %}
+           
+    <div class="post-body">
+            {{ post.body }}
+    </div>
+
+
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script>
+	$(document).ready(function() {
+		var reload = function() {
+			location.reload();
+		}
+		    
+		setInterval(reload, 5000);
+	});
+</script>
+{{ pagedown.include_pagedown() }}
+{% endblock %}
+

@@ -77,6 +77,7 @@ class User(UserMixin, db.Model):
     avatar_hash = db.Column(db.String(32))
     posts = db.relationship('Post', backref='user', lazy='dynamic')
     events = db.relationship('Event', backref='user', lazy='dynamic')
+    current_event = db.Column(db.String(64))
     followed = db.relationship('Follow',
                                foreign_keys=[Follow.follower_id],
                                backref=db.backref('follower', lazy='joined'),
@@ -134,6 +135,17 @@ class User(UserMixin, db.Model):
     @property
     def password(self):
         raise AttributeError('password is not a readable attribute')
+
+    @staticmethod
+    def update_current():
+        users = User.query.all()
+        event = Event.get_current()
+        event_string = event.location
+
+        for u in users:
+            u.current_event = event_string
+            db.session.add(u)
+        db.session.commit()
 
     @password.setter
     def password(self, password):
@@ -308,6 +320,8 @@ class Event(db.Model):
         db.session.add(self)
         db.session.commit()
 
+        User.update_current()
+
     @staticmethod
     def get_current():
         event = Event.query.filter_by(current=True).first()
@@ -344,6 +358,8 @@ class Post(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     event_id = db.Column(db.Integer, db.ForeignKey('events.id'))
     comments = db.relationship('Comment', backref='post', lazy='dynamic')
+    platform = db.Column(db.String(64))
+    browser = db.Column(db.String(64))
 
     @staticmethod
     def generate_fake(count=100):

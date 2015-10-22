@@ -8,6 +8,7 @@ from .forms import EditProfileForm, EditProfileAdminForm, PostForm,\
 from .. import db
 from ..models import Permission, Role, User, Post, Comment, Event, Prompt, PromptEvent
 from ..decorators import admin_required, permission_required
+from sqlalchemy.sql.expression import func, select
 
 
 @main.after_app_request
@@ -46,6 +47,9 @@ def index():
         post.passion = form.passion.data        
         post.user=current_user._get_current_object()
         post.event = Event.get_current()
+        post.platform = request.user_agent.platform
+        post.browser = request.user_agent.browser
+
         db.session.add(post)
         return redirect(url_for('.index'))
     page = request.args.get('page', 1, type=int)
@@ -60,8 +64,46 @@ def index():
         page, per_page=current_app.config['FLASKY_POSTS_PER_PAGE'],
         error_out=False)
     posts = pagination.items
+
+    
+
     return render_template('index.html', form=form, posts=posts,
                            show_followed=show_followed, pagination=pagination)
+
+@main.route('/poll', methods=['GET', 'POST'])
+def poll():
+    form = PostForm()
+    if current_user.can(Permission.WRITE_ARTICLES) and \
+            form.validate_on_submit():
+
+        post = Post()
+        post.name = form.name.data
+        post.age = form.age.data
+        post.gender = form.gender.data
+        post.body = form.body.data
+        post.passion = form.passion.data        
+        post.user=current_user._get_current_object()
+        post.event = Event.get_current()
+        post.platform = request.user_agent.platform
+        post.browser = request.user_agent.browser
+        db.session.add(post)
+        flash('Submitted')
+        return redirect(url_for('.poll'))
+
+    return render_template('poll.html', form=form)
+
+@main.route('/random/all')
+def randompoll():
+    random_opinion = Post.query.order_by(func.rand()).first()
+
+    return render_template('random.html', post=random_opinion)
+
+@main.route('/random/event/<int:id>')
+def randomeventpoll(id):
+    event = Event.query.get_or_404(id)
+    random_opinion = Post.query.filter_by(event=event).order_by(func.rand()).first()
+
+    return render_template('random.html', post=random_opinion)
 
 @main.route('/opinion/all')
 def opinions():

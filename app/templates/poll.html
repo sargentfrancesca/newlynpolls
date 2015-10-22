@@ -1,8 +1,8 @@
-{% extends "base.html" %}
+{% extends "plain_base.html" %}
 {% import "bootstrap/wtf.html" as wtf %}
 {% import "_macros.html" as macros %}
 
-{% block title %}Flasky{% endblock %}
+{% block title %}Poll{% endblock %}
 
 {% block page_content %}
 <div>
@@ -17,3 +17,4 @@
 {{ super() }}
 {{ pagedown.include_pagedown() }}
 {% endblock %}
+
