@@ -14,5 +14,6 @@
 
 {% block scripts %}
 {{ super() }}
-{{ pagedown.include_pagedown() }}
+<script src="{{ url_for('static', filename='pikaday.js') }}"></script>
+{{ moment.include_moment() }}
 {% endblock %}
