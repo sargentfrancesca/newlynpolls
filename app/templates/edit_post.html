@@ -15,5 +15,15 @@
 {% block scripts %}
 {{ super() }}
 <script src="{{ url_for('static', filename='pikaday.js') }}"></script>
+<script>
+
+$(document).ready(function(){
+    var picker = new Pikaday({
+        field: document.getElementById('date'),
+        format: 'DD MM YY'
+    });
+
+})
+</script>
 {{ moment.include_moment() }}
 {% endblock %}
