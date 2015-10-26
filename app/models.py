@@ -343,6 +343,7 @@ class Prompt(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     text = db.Column(db.Text())
     promptevents = db.relationship('PromptEvent', backref='prompt', lazy='dynamic')
+    opinions = db.relationship('Post', backref='prompt', lazy='dynamic')
 
 
 class Post(db.Model):
@@ -357,6 +358,7 @@ class Post(db.Model):
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     event_id = db.Column(db.Integer, db.ForeignKey('events.id'))
+    prompt_id = db.Column(db.Integer, db.ForeignKey('prompts.id'))
     comments = db.relationship('Comment', backref='post', lazy='dynamic')
     platform = db.Column(db.String(64))
     browser = db.Column(db.String(64))

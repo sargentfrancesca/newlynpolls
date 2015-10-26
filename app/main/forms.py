@@ -1,6 +1,6 @@
 from flask.ext.wtf import Form
 from wtforms import StringField, TextAreaField, BooleanField, SelectField,\
-    SubmitField, IntegerField, DateField, SelectMultipleField
+    SubmitField, IntegerField, DateField, SelectMultipleField, HiddenField
 from wtforms.validators import Required, Length, Email, Regexp
 from wtforms import ValidationError
 from flask.ext.pagedown.fields import PageDownField
@@ -56,6 +56,7 @@ class PostForm(Form):
     gender = SelectField('Gender', choices=[('f', 'Female'), ('m', 'Male'), ('o', 'Other'), ('p', 'Prefer Not to Say')])
     passion = StringField('Profession/Passion', validators=[Length(0, 200)])
     body = TextAreaField('Opinion', validators=[Required()])
+    prompt = HiddenField()
     submit = SubmitField('Submit')
 
     def __init__(self, *args, **kwargs):
@@ -64,6 +65,8 @@ class PostForm(Form):
         event_prompts_count = current_event.prompts.count()
         event_id = randint(0,(event_prompts_count - 1))
         random_prompt_text = current_event.prompts[event_id].prompt.text
+        random_prompt_id = current_event.prompts[event_id].prompt.id
+        self.prompt.data = random_prompt_id
         self.body.label.text = random_prompt_text
 
 
