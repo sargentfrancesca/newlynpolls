@@ -47,6 +47,7 @@ def index():
         post.passion = form.passion.data        
         post.user=current_user._get_current_object()
         post.event = Event.get_current()
+        post.prompt = Prompt.query.filter_by(id=form.prompt.data).first()
         post.platform = request.user_agent.platform
         post.browser = request.user_agent.browser
 
@@ -95,6 +96,12 @@ def poll():
 @main.route('/random/all')
 def randompoll():
     random_opinion = Post.query.order_by(func.rand()).first()
+
+    print random_opinion.body
+
+    import os
+    os.system('echo "'+random_opinion.body+'"')
+    os.system('say "'+random_opinion.body+'"')
 
     return render_template('random.html', post=random_opinion)
 
@@ -214,7 +221,8 @@ def edit(id):
         post.gender = form.gender.data
         post.passion = form.passion.data 
         post.platform = request.user_agent.platform
-        post.browser = request.user_agent.browser       
+        post.browser = request.user_agent.browser
+        post.prompt = Prompt.query.filter_by(id=form.prompt.data).first()   
         post.user=current_user._get_current_object()
         db.session.add(post)
         flash('The post has been updated.')
@@ -225,6 +233,7 @@ def edit(id):
     form.gender.data = post.gender
     form.passion.data = post.passion
     form.body.data = post.body
+    form.prompt.data = post.prompt
     return render_template('edit_post.html', form=form)
 
 @main.route('/event/<int:id>', methods=['GET', 'POST'])
