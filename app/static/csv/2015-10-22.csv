@@ -1,4 +1,9 @@
-id	body	timestamp	body_html	age	gender	name	passion	user_id	event_id
-1	NULL	2015-10-19 19:42:29	NULL	32	f	Batman	Breeding tiny cacti	1	NULL
-2	NULL	2015-10-22 14:34:12	NULL	25	f	Francesca	Coding 	1	15
-3	Because you haven't cut your nails you dutty bitch	2015-10-22 14:40:40	<p>Because you haven't cut your nails you dutty bitch</p>	25	f	Franny	Eating little and often	1	15
+id      name    age     gender  passion body    body_html       timestamp       user_id event_id        browser platform
+1       Francesca       25      f       Breeding tiny cacti     I like art      <p>I like art</p>       2015-10-19 19:42:29     1       1       chrome  macos
+2       Chez    25      f       Eating coconut chicken  Testing the browser stuff       <p>Testing the browser stuff</p>        2015-10-22 18:49:16     1       2       chrome  macos
+4       Safari  26      f       Being shit      Toes    <p>Toes</p>     2015-10-22 19:08:36     1       2       safari  macos
+5       Android 25      f       Being slow      Slow thoughts   <p>Slow thoughts</p>    2015-10-22 19:09:34     1       2       chrome  android
+6       Firefox 25      f       Foxy    Older than time itself^M\n      <p>Older than time itself</p>   2015-10-22 19:10:39     1       2       firefox macos
+7       Opera   66      o       Not being very popular  But very underrated     <p>But very underrated</p>      2015-10-22 19:13:16     1       2       chrome  macos
+8       Tor     7       p       Being a shady fucker    Proxy   <p>Proxy</p>    2015-10-22 19:15:33     1       2       firefox windows
+9       Chrome iPhone   8       f       Being small     Not much        <p>Not much </p>        2015-10-22 19:19:34     1       2       safari  iphone
