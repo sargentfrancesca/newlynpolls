@@ -1,5 +1,5 @@
 from flask import render_template, redirect, url_for, abort, flash, request,\
-    current_app, make_response
+    current_app, make_response, jsonify
 from flask.ext.login import login_required, current_user
 from flask.ext.sqlalchemy import get_debug_queries
 from . import main
@@ -99,11 +99,14 @@ def randompoll():
 
     print random_opinion.body
 
-    import os
-    os.system('echo "'+random_opinion.body+'"')
-    os.system('say "'+random_opinion.body+'"')
-
     return render_template('random.html', post=random_opinion)
+
+@main.route('/randomajax')
+def randomajax():
+    random_opinion = [Post.query.order_by(func.rand()).first()]
+
+    opinions = [(r.body, r.prompt.text) for r in random_opinion]
+    return jsonify(opinions=opinions) 
 
 @main.route('/random/event/<int:id>')
 def randomeventpoll(id):
