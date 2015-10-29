@@ -5,11 +5,20 @@
 {% block title %}The General Opinion - Random Opinions{% endblock %}
 
 {% block page_content %}
-   {% if post %}        
-    <div class="post-body">
-            {{ post.body }}
+   
+
+    <div id="slide">
+    	<div class="text-box">
+    		{% if post %}
+    		<p class="prompt">
+
+    		</p>        
+		    <p class="body">
+
+		    </p>
+		    {% endif %}
+    	</div>
     </div>
-    {% endif %}
 
 
 {% endblock %}
@@ -18,11 +27,86 @@
 {{ super() }}
 <script>
 	$(document).ready(function() {
+		
+
+		var getOpinion = function() {
+
+			$('p').animate({'opacity' : '0'}, function() {
+
+				$.ajax({
+		        	url: '{{ url_for("main.randomajax") }}'
+		        }).done(function (data) { 
+		        	var prompt = data.opinions[0][1]
+		        	var opinion = data.opinions[0][0]
+		        	$('p.prompt').html(prompt).delay(500).animate({
+		        		
+		        		'opacity' : '1'
+		       		 
+		        	})
+	        		$('p.body').html('"'+opinion+'"').delay(500).animate({
+		        		
+		        		'opacity' : '1'
+		       		 
+		        	})
+		        	
+		        });
+
+
+
+			})
+			
+	        
+	        
+		}
+
+		getOpinion();
+
+		;(function($) {
+		    $.fn.textfill = function(options) {
+		        var fontSize = options.maxFontPixels;
+		        var ourText = $('span:visible:first', this);
+		        var maxHeight = $(this).height();
+		        var maxWidth = $(this).width();
+		        var textHeight;
+		        var textWidth;
+		        do {
+		            ourText.css('font-size', fontSize);
+		            textHeight = ourText.height();
+		            textWidth = ourText.width();
+		            fontSize = fontSize - 1;
+		        } while ((textHeight > maxHeight || textWidth > maxWidth) && fontSize > 3);
+		        return this;
+		    }
+		})(jQuery);
+
 		var reload = function() {
 			location.reload();
 		}
-		    
-		setInterval(reload, 5000);
+		  
+		$('.text-box').textfill({ maxFontPixels: 36 });
+
+		function marginss() {
+			$('#slide').css({
+				position:'absolute',
+				left: ($(window).width() - $('#slide').outerWidth())/2,
+				top: ($(window).height() - $('#slide').outerHeight())/2
+			});
+
+			$('.text-box').css({
+				position:'absolute',
+				left: ($('#slide').width() - $('.text-box').outerWidth())/2,
+				top: ($('#slide').height() - $('.text-box').outerHeight())/2
+			});
+
+		}
+
+		$(window).resize(function(){
+			marginss();
+
+		});
+
+		marginss();
+		setInterval(getOpinion, 10000);
 	});
 </script>
 {{ pagedown.include_pagedown() }}

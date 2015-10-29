@@ -1,0 +1,53 @@
+body {
+	background: #08777E;
+	font-family: 'Roboto', sans-serif;
+	font-weight: 500;
+	color: #F16823;
+}
+
+#slide {
+	width: 80%;
+	height: 80%;
+	background: #fff;
+	position: absolute;
+	-webkit-box-shadow: 1em 1em 0px 0px rgba(236,240,241,1);
+	-moz-box-shadow: 1em 1em 0px 0px rgba(236,240,241,1);
+	box-shadow: 1em 1em 0px 0px rgba(236,240,241,1);
+	overflow: hidden;
+	perspective: 400px;
+}
+
+.text-box {
+	width: 95%;
+	height: 90%;
+	background: #fff;
+	border: 0.2em solid #F16823;
+	position: relative;
+	display: table;
+	overflow: hidden;
+	transform-style: preserve-3d;
+    transition: transform 1s;
+    backface-visibility: hidden;
+}
+
+.text-box p {
+	line-height: 100%;
+	vertical-align: middle;
+	display: table-cell;
+	margin: 1em;
+	padding: 2em 5em 2em 5em;
+	text-align: justify;
+	margin: 0 auto;
+	font-size: 1.2vw;
+}
+
+#slide.flip {
+	 transform: translateY(-1000px);
+    -webkit-transform: translateY(-1000px);
+    transition-duration: 3s;
+    -webkit-transition-duration:3s;
+}
+
+p.prompt {
+	font-weight: 700;
+}
