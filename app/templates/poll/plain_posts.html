@@ -1,0 +1,45 @@
+{% extends "poll/plain_base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+{% import "_macros.html" as macros %}
+
+{% block title %}The General Opinions{% endblock %}
+
+{% block page_content %}
+
+{% if posts %}
+{% include 'poll/_plain_posts.html' %}
+{% endif %}
+
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script>
+var idleTime = 0;
+
+$(document).ready(function() {
+
+	var idleInterval = setInterval(timerIncrement, 1000); // 1 minute
+
+    //Zero the idle timer on mouse movement.
+    $(this).mousemove(function (e) {
+        idleTime = 0;
+    });
+    $(this).keypress(function (e) {
+        idleTime = 0;
+    });
+
+});
+	
+
+function timerIncrement() {
+    idleTime = idleTime + 1;
+    console.log(idleTime)
+    if (idleTime > 120) { 
+       console.log("Should change")
+       window.location.href = '{{url_for("poll.home")}}'
+    }
+}
+</script>
+{{ pagedown.include_pagedown() }}
+{% endblock %}
