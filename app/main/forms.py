@@ -51,11 +51,11 @@ class EditProfileAdminForm(Form):
 
 
 class PostForm(Form):
+    body = TextAreaField('Opinion', validators=[Required()])
     name = StringField('Name/Alias', validators=[Length(0, 64)])
     age = IntegerField('Age')
     gender = SelectField('Gender', choices=[('f', 'Female'), ('m', 'Male'), ('o', 'Other'), ('p', 'Prefer Not to Say')])
     passion = StringField('Profession/Passion', validators=[Length(0, 200)])
-    body = TextAreaField('Opinion', validators=[Required()])
     prompt = HiddenField()
     submit = SubmitField('Submit')
 
@@ -67,7 +67,8 @@ class PostForm(Form):
         random_prompt_text = current_event.prompts[event_id].prompt.text
         random_prompt_id = current_event.prompts[event_id].prompt.id
         self.prompt.data = random_prompt_id
-        self.body.label.text = random_prompt_text
+        self.prompttext = random_prompt_text
+        self.body.label.text = ''
 
 
 class CommentForm(Form):

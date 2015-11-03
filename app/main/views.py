@@ -66,13 +66,21 @@ def index():
         error_out=False)
     posts = pagination.items
 
-    
+    print request.referrer
 
     return render_template('index.html', form=form, posts=posts,
                            show_followed=show_followed, pagination=pagination)
 
-@main.route('/poll', methods=['GET', 'POST'])
+@main.route('/bigstyle', methods=['GET', 'POST'])
 def poll():
+
+    referrer = str(request.referrer)
+
+    # print referrer
+
+    # if referrer.endswith("poll"):
+    #     print "came from poll"
+
     form = PostForm()
     if current_user.can(Permission.WRITE_ARTICLES) and \
             form.validate_on_submit():
@@ -93,11 +101,12 @@ def poll():
 
     return render_template('poll.html', form=form)
 
+
 @main.route('/random/all')
 def randompoll():
     random_opinion = Post.query.order_by(func.rand()).first()
 
-    print random_opinion.body
+    request.randomtype = 'all'
 
     return render_template('random.html', post=random_opinion)
 
@@ -108,10 +117,20 @@ def randomajax():
     opinions = [(r.body, r.prompt.text) for r in random_opinion]
     return jsonify(opinions=opinions) 
 
+@main.route('/randomeventajax/<int:id>')
+def randomeventajax(id):
+    event = Event.query.get_or_404(id)
+    random_opinion = [Post.query.filter_by(event=event).order_by(func.rand()).first()]
+
+    opinions = [(r.body, r.prompt.text) for r in random_opinion]
+    return jsonify(opinions=opinions)
+
 @main.route('/random/event/<int:id>')
 def randomeventpoll(id):
     event = Event.query.get_or_404(id)
     random_opinion = Post.query.filter_by(event=event).order_by(func.rand()).first()
+
+    request.randomtype = 'individual'
 
     return render_template('random.html', post=random_opinion)
 
@@ -119,7 +138,7 @@ def randomeventpoll(id):
 def opinions():
     posts = Post.query.all()
 
-    return render_template('posts.html', posts=posts)
+    return render_template('plain_posts.html', posts=posts)
 
 @main.route('/opinion/<filt>/<value>')
 def opinionfilter(filt, value):

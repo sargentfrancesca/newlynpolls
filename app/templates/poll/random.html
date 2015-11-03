@@ -1,4 +1,4 @@
-{% extends "plain_base.html" %}
+{% extends "poll/plain_base.html" %}
 {% import "bootstrap/wtf.html" as wtf %}
 {% import "_macros.html" as macros %}
 
@@ -26,6 +26,7 @@
 {% block scripts %}
 {{ super() }}
 <script>
+	
 	$(document).ready(function() {
 
 		var view_type = '{{ request.randomtype }}';

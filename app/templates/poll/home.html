@@ -1,0 +1,48 @@
+{% extends "poll/plain_base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+{% import "_macros.html" as macros %}
+
+{% block title %}The General Opinion - Random Opinions{% endblock %}
+
+{% block page_content %}
+   
+<div class="row">
+	<div class="titlebox col-lg-7 col-lg-offset-2 col-md-7 col-md-offset-2 col-sm-7 col-sm-offset-2 col-xs-7 col-xs-offset-2">
+		<p>THE<br/> GENERAL<br/> OPINION </p>
+	</div>
+</div>
+
+
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script>
+	
+	$(document).ready(function() {
+
+		function marginss() {
+			$('.titlebox').css({
+				position:'absolute',
+				top: ($(window).height() - $('.titlebox').outerHeight())/2
+			});
+
+		}
+
+		marginss();
+		$(window).resize(function(){
+			marginss();
+
+	
+		});
+
+		$('.titlebox').click(function() {
+			window.location.href = '{{url_for("poll.vote")}}'
+		})
+
+		
+	});
+</script>
+{{ pagedown.include_pagedown() }}
+{% endblock %}
+

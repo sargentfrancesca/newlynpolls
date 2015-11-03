@@ -2,7 +2,18 @@ body {
 	background: #08777E;
 	font-family: 'Roboto', sans-serif;
 	font-weight: 500;
-	color: #F16823;
+	color: #f37e32;
+	-webkit-font-smoothing: antialiased;
+}
+
+h4 {
+	font-size: 2em !important;
+	margin-top: 2em;
+	margin-bottom: 1em;
+}
+
+div.message {
+	margin-top: 2em;
 }
 
 #slide {
@@ -21,7 +32,7 @@ body {
 	width: 95%;
 	height: 90%;
 	background: #fff;
-	border: 0.2em solid #F16823;
+	border: 0.2em solid #f37e32;
 	position: relative;
 	display: table;
 	overflow: hidden;
@@ -51,3 +62,142 @@ body {
 p.prompt {
 	font-weight: 700;
 }
+
+ul.opinions {
+	list-style: none
+}
+
+li.slide h4 {
+	font-weight: 800;
+	font-size: 2em;
+	margin: 0 !important;
+}
+
+li.slide div.opinion-body {
+	font-weight: 500;
+	font-size: 1.8em;
+}
+
+li.slide {
+	margin-top: 2em;
+}
+
+div.webform,
+div.titlebox,
+div.about,
+li.slide {
+    background: #fff;
+/*    -webkit-box-shadow: 1em 1em 0px 0px rgba(236,240,241,1);
+    -moz-box-shadow: 1em 1em 0px 0px rgba(236,240,241,1);
+    box-shadow: 1em 1em 0px 0px rgba(236,240,241,1);*/
+    -webkit-box-shadow: 1em 1em 0px 0px rgba(243,126,50,1);
+    -moz-box-shadow: 1em 1em 0px 0px rgba(243,126,50,1);
+    box-shadow: 1em 1em 0px 0px rgba(243,126,50,1);
+    padding: 2em;
+    margin-top: 1em 3em;
+    margin-bottom: 2em;
+}
+
+div.titlebox {
+	margin-top: 1em;
+	cursor: pointer;
+}
+
+div.titlebox p {
+	text-align: center;
+	font-size: 7vw;
+}
+
+div.about {
+	position: absolute;
+	z-index: 1;
+	margin-top: 5em;
+	display: none;
+}
+
+div.about p {
+	font-size: 1.8em;
+	margin: 1em;
+	text-align: justify;
+	padding: 0;
+}
+div.about span.title{
+	font-size: 2em;
+}
+
+div.webform input,
+div.webform textarea,
+div.webform select  {
+	border: 0.2em solid #FFFFFF;
+	box-shadow: none;
+	border-radius: 0px;
+	resize: vertical;
+	color: #f37e32;
+}
+
+div.webform input:focus,
+div.webform textarea:focus,
+div.webform select:focus {
+	box-shadow: 0 0 0px #08777E;
+	border: 1px solid #08777E;
+}
+
+
+div.webform textarea {
+	resize:none;
+    overflow:hidden;
+    min-height:300px;
+    font-size: 1.8em;
+}
+
+div.webform input#name,
+div.webform input#age,
+div.webform select#gender,
+div.webform input#passion  {
+	font-size: 1.8em;
+	min-height: 1.9em;
+}
+
+div.webform input#submit {
+	font-size: 1.8em !important;
+	min-height: 1.9em !important;
+}
+
+div.webform .form-group{
+/*	margin: 1em;*/
+}
+
+hr.seperator {
+	border: none;
+	background: #f37e32;
+	height: 0.2em;
+	padding: 0px;
+}
+
+input[type=submit],
+div.help {
+	background: #fff;
+    -webkit-box-shadow: 1em 1em 0px 0px rgba(243,126,50,1);
+    -moz-box-shadow: 1em 1em 0px 0px rgba(243,126,50,1);
+    box-shadow: 0.5em 0.5em 0px 0px rgba(243,126,50,1);
+	border:0 none;
+	cursor:pointer;
+	border-radius: 0px;
+	color: #f37e32;
+	font-size: 1.8em !important;
+	min-height: 1.9em !important;
+}
+
+div.submit-stuff {
+	margin-bottom: 2em !important;
+}
+
+.blurred {
+	-webkit-filter: opacity(0.1);
+	-moz-filter: opacity(0.1);
+	-o-filter: opacity(0.1);
+	-ms-filter: opacity(0.1);
+	filter: opacity(0.1);
+}
+
+

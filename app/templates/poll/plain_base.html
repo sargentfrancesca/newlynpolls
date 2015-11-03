@@ -17,11 +17,14 @@
 {% block content %}
 <div class="container">
     {% for message in get_flashed_messages() %}
-    <div class="alert alert-warning">
-        <button type="button" class="close" data-dismiss="alert">&times;</button>
-        {{ message }}
-    </div>
+    <div class="row-fluid msg">
+	    <div class="message alert alert-warning" style="margin-top: 2em">
+	        <button type="button" class="close" data-dismiss="alert">&times;</button>
+	        {{ message }}
+	    </div>
+	</div>
     {% endfor %}
+
 
     {% block page_content %}{% endblock %}
 </div>
@@ -30,5 +33,10 @@
 {% block scripts %}
 {{ super() }}
 <script src="{{ url_for('static', filename='pikaday.js') }}"></script>
+<script>
+$(document).ready(function() {
+	$('.msg').fadeOut("slow");
+})
+</script>
 {{ moment.include_moment() }}
 {% endblock %}
