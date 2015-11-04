@@ -34,53 +34,11 @@ def server_shutdown():
 
 
 @main.route('/', methods=['GET', 'POST'])
-def index():
-    form = PostForm()
-    if current_user.can(Permission.WRITE_ARTICLES) and \
-            form.validate_on_submit():
-
-        post = Post()
-        post.name = form.name.data
-        post.age = form.age.data
-        post.gender = form.gender.data
-        post.body = form.body.data
-        post.passion = form.passion.data        
-        post.user=current_user._get_current_object()
-        post.event = Event.get_current()
-        post.prompt = Prompt.query.filter_by(id=form.prompt.data).first()
-        post.platform = request.user_agent.platform
-        post.browser = request.user_agent.browser
-
-        db.session.add(post)
-        return redirect(url_for('.index'))
-    page = request.args.get('page', 1, type=int)
-    show_followed = False
-    if current_user.is_authenticated:
-        show_followed = bool(request.cookies.get('show_followed', ''))
-    if show_followed:
-        query = current_user.followed_posts
-    else:
-        query = Post.query
-    pagination = query.order_by(Post.timestamp.desc()).paginate(
-        page, per_page=current_app.config['FLASKY_POSTS_PER_PAGE'],
-        error_out=False)
-    posts = pagination.items
-
-    print request.referrer
-
-    return render_template('index.html', form=form, posts=posts,
-                           show_followed=show_followed, pagination=pagination)
+def index():    
+    return render_template('index.html')
 
 @main.route('/bigstyle', methods=['GET', 'POST'])
 def poll():
-
-    referrer = str(request.referrer)
-
-    # print referrer
-
-    # if referrer.endswith("poll"):
-    #     print "came from poll"
-
     form = PostForm()
     if current_user.can(Permission.WRITE_ARTICLES) and \
             form.validate_on_submit():
@@ -138,7 +96,7 @@ def randomeventpoll(id):
 def opinions():
     posts = Post.query.all()
 
-    return render_template('plain_posts.html', posts=posts)
+    return render_template('posts.html', posts=posts)
 
 @main.route('/opinion/<filt>/<value>')
 def opinionfilter(filt, value):

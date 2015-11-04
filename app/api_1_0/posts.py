@@ -32,6 +32,11 @@ def get_post(id):
     post = Post.query.get_or_404(id)
     return jsonify(post.to_json())
 
+@api.route('/posts/recent')
+def recent_post():
+    post = Post.query.order_by(Post.id.desc()).first()
+    return jsonify(post.to_json())
+
 
 @api.route('/posts/', methods=['POST'])
 @permission_required(Permission.WRITE_ARTICLES)

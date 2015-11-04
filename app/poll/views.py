@@ -26,8 +26,7 @@ def vote():
         post.age = form.age.data
         post.gender = form.gender.data
         post.body = form.body.data
-        post.passion = form.passion.data        
-        post.user=current_user._get_current_object()
+        post.passion = form.passion.data
         post.event = Event.get_current()
         post.platform = request.user_agent.platform
         post.browser = request.user_agent.browser
