@@ -5,20 +5,15 @@
 {% block title %}The General Opinion - Random Opinions{% endblock %}
 
 {% block page_content %}
-   
-
-    <div id="slide">
-    	<div class="text-box">
-    		{% if post %}
-    		<p class="prompt">
-
-    		</p>        
-		    <p class="body">
-
-		    </p>
-		    {% endif %}
-    	</div>
+<div class="row-fluid"> 
+    <div class="titlebox col-lg-8 col-lg-offset-2 col-md-8 col-md-offset-2 col-sm-8 col-sm-offset-2 col-xs-8 col-xs-offset-2">
+		{% if post %}
+		<p class="prompt col-lg-12 col-md-12 col-sm-12 col-xs-12"></p>
+		<hr class="seperator col-lg-12 col-md-12 col-sm-12 col-xs-12">   
+		<p class="body col-lg-12"></p>
+	    {% endif %}
     </div>
+</div>
 
 
 {% endblock %}
@@ -29,12 +24,29 @@
 	
 	$(document).ready(function() {
 
+		$('body').css({
+			'background' : '#f37e32',
+			'color' : '#08777E'
+		});
+
+		$('.titlebox').css({
+			'-webkit-box-shadow' : '1em 1em 0px 0px rgba(243,126,50,1)',
+		    '-moz-box-shadow' : '1em 1em 0px 0px rgba(243,126,50,1)',
+		    'box-shadow' : '1em 1em 0px 0px rgba(8,119,126,1)'
+		});
+
+		$('hr.seperator').css({
+			'background' : '#08777E'
+		})
+
 		var view_type = '{{ request.randomtype }}';
 
 		if (view_type === 'individual') {
 			data_url = '{{ url_for("poll.randomeventajax", id=post.event.id) }}'
-		} else {
+		} else if (view_type === 'all') {
 			data_url = '{{ url_for("poll.randomajax") }}'
+		} else {
+			data_url = '{{ url_for("poll.randomtodayajax") }}'
 		}
 		
 
@@ -47,24 +59,18 @@
 		        }).done(function (data) { 
 		        	var prompt = data.opinions[0][1]
 		        	var opinion = data.opinions[0][0]
-		        	$('p.prompt').html(prompt).delay(500).animate({
-		        		
-		        		'opacity' : '1'
-		       		 
+		        	$('p.prompt').html(prompt).delay(500).animate({		        		
+		        		'opacity' : '1'		       		 
 		        	})
 	        		$('p.body').html('"'+opinion+'"').delay(500).animate({
 		        		
-		        		'opacity' : '1'
-		       		 
+		        		'opacity' : '1'		       		 
 		        	})
 		        	
 		        });
 
 
-
-			})
-			
-	        
+			})	        
 	        
 		}
 
@@ -95,18 +101,11 @@
 		$('.text-box').textfill({ maxFontPixels: 36 });
 
 		function marginss() {
-			$('#slide').css({
+			$('.container').css({
 				position:'absolute',
-				left: ($(window).width() - $('#slide').outerWidth())/2,
-				top: ($(window).height() - $('#slide').outerHeight())/2
+				left: ($(window).width() - $('.container').outerWidth())/2,
+				top: ($(window).height() - $('.container').outerHeight())/2
 			});
-
-			$('.text-box').css({
-				position:'absolute',
-				left: ($('#slide').width() - $('.text-box').outerWidth())/2,
-				top: ($('#slide').height() - $('.text-box').outerHeight())/2
-			});
-
 		}
 
 		$(window).resize(function(){

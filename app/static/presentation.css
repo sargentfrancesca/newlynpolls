@@ -61,6 +61,14 @@ div.message {
 
 p.prompt {
 	font-weight: 700;
+	font-size: 2.0em !important;
+	text-align: left !important;
+}
+
+p.body {
+	font-weight: 500;
+	font-size: 1.8em !important;
+	text-align: left !important;
 }
 
 ul.opinions {
