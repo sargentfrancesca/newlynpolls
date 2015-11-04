@@ -60,12 +60,16 @@
 		        	var prompt = data.opinions[0][1]
 		        	var opinion = data.opinions[0][0]
 		        	$('p.prompt').html(prompt).delay(500).animate({		        		
-		        		'opacity' : '1'		       		 
+		        		'opacity' : '1'	       		 
 		        	})
 	        		$('p.body').html('"'+opinion+'"').delay(500).animate({
 		        		
 		        		'opacity' : '1'		       		 
 		        	})
+
+	        		$('p').change(function() {
+	        			marginss();
+	        		})
 		        	
 		        });
 
