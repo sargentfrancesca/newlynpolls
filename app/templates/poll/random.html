@@ -67,9 +67,9 @@
 		        		'opacity' : '1'		       		 
 		        	})
 
-	        		$('p').change(function() {
-	        			marginss();
-	        		})
+	        		$('.titlebox').bind("DOMSubtreeModified",function(){
+					  marginss();
+					});
 		        	
 		        });
 
