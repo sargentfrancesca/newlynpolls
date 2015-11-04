@@ -62,6 +62,14 @@ def randomeventajax(id):
     opinions = [(r.body, r.prompt.text) for r in random_opinion]
     return jsonify(opinions=opinions)
 
+@poll.route('/randomtodayajax/')
+def randomtodayajax():
+    event = Event.get_current()
+    random_opinion = [Post.query.filter_by(event=event).order_by(func.rand()).first()]
+
+    opinions = [(r.body, r.prompt.text) for r in random_opinion]
+    return jsonify(opinions=opinions)
+
 @poll.route('/random/event/<int:id>')
 def randomeventpoll(id):
     event = Event.query.get_or_404(id)
@@ -70,6 +78,15 @@ def randomeventpoll(id):
     request.randomtype = 'individual'
 
     return render_template('poll/random.html', post=random_opinion)
+
+@poll.route('/random/today')
+def randomtoday():
+    event = Event.get_current()
+    posts = Post.query.filter_by(event=event).order_by(func.rand()).first()
+
+    request.randomtype = 'individual-today'
+
+    return render_template('poll/random.html', post=posts)
 
 @poll.route('/all')
 def opinions():
