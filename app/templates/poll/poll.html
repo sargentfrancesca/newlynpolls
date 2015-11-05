@@ -22,6 +22,9 @@
 			</div>
 			<div class="col-lg-11 col-md-11 col-sm-10 col-xs-10">
 				{{ form.name(class="form-control", placeholder="Name/Alias") }}
+				{% for error in form.name.errors %}
+				            <span class="error_message" style="color: red">{{ error }}</span>
+				        {% endfor %}
 			</div>
 			<hr class="col-lg-12 col-md-11 col-sm-11 col-xs-11 seperator"/>
 		</div>

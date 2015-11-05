@@ -10,7 +10,7 @@ from sqlalchemy.sql.expression import func, select
 
 class PostForm(Form):
     body = TextAreaField('Opinion', validators=[Required()])
-    name = StringField('Name/Alias', validators=[Length(0, 64)])
+    name = StringField('Name/Alias', validators=[Length(0, 200)])
     age = IntegerField('Age')
     gender = SelectField('Gender', choices=[('f', 'Female'), ('m', 'Male'), ('o', 'Other'), ('p', 'Prefer Not to Say')])
     passion = StringField('Profession/Passion', validators=[Length(0, 200)])
