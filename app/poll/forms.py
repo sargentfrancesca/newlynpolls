@@ -6,6 +6,7 @@ from wtforms import ValidationError
 from flask.ext.pagedown.fields import PageDownField
 from ..models import Role, User, Prompt, Event, PromptEvent
 from random import randint
+from sqlalchemy.sql.expression import func, select
 
 class PostForm(Form):
     body = TextAreaField('Opinion', validators=[Required()])
@@ -13,18 +14,15 @@ class PostForm(Form):
     age = IntegerField('Age')
     gender = SelectField('Gender', choices=[('f', 'Female'), ('m', 'Male'), ('o', 'Other'), ('p', 'Prefer Not to Say')])
     passion = StringField('Profession/Passion', validators=[Length(0, 200)])
-    prompt = HiddenField()
+    prompt = StringField()
     submit = SubmitField('Submit')
 
     def __init__(self, *args, **kwargs):
         super(PostForm, self).__init__(*args, **kwargs)
         current_event = Event.get_current()
-        event_prompts_count = current_event.prompts.count()
-        event_id = randint(0,(event_prompts_count - 1))
-        random_prompt_text = current_event.prompts[event_id].prompt.text
-        random_prompt_id = current_event.prompts[event_id].prompt.id
-        self.prompt.data = random_prompt_id
-        self.prompttext = random_prompt_text
+        random_prompt_event = current_event.prompts.order_by(func.rand()).first()
+        random_prompt = random_prompt_event.prompt
+        self.random_prompt = random_prompt
         self.body.label.text = ''
 
 
