@@ -5,7 +5,11 @@
 {% block title %}The General Opinions{% endblock %}
 
 {% block page_content %}
-
+<div class="row">
+    <div class="titlebox col-lg-1 col-md-1 col-sm-1 col-xs-2 back">
+        <a href="{{ url_for('poll.vote') }}"><span class="glyphicon glyphicon-arrow-left"></span></a>
+    </div>
+</div>
 {% if posts %}
 {% include 'poll/_plain_posts.html' %}
 {% endif %}
