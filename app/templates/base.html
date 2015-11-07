@@ -33,8 +33,8 @@
                         Events <b class="caret"></b>
                     </a>
                     <ul class="dropdown-menu">
-                        <li><a href="{{ url_for('.events') }}">View Events</a></li>
-                        <li><a href="{{ url_for('.postevent') }}">Add Event</a></li>
+                        <li><a href="{{ url_for('main.events') }}">View Events</a></li>
+                        <li><a href="{{ url_for('main.postevent') }}">Add Event</a></li>
                     </ul>
                 </li>
                 <li class="dropdown">
@@ -42,8 +42,8 @@
                         Prompts <b class="caret"></b>
                     </a>
                     <ul class="dropdown-menu">
-                        <li><a href="{{ url_for('.prompts') }}">View Prompts</a></li>
-                        <li><a href="{{ url_for('.postprompt') }}">Add Prompt</a></li>
+                        <li><a href="{{ url_for('main.prompts') }}">View Prompts</a></li>
+                        <li><a href="{{ url_for('main.postprompt') }}">Add Prompt</a></li>
                     </ul>
                 </li>
                 <li class="dropdown">
@@ -51,7 +51,7 @@
                         Opinions <b class="caret"></b>
                     </a>
                     <ul class="dropdown-menu">
-                        <li><a href="{{ url_for('.opinions') }}">View Opinions</a></li>
+                        <li><a href="{{ url_for('main.opinions') }}">View Opinions</a></li>
                         <li><a href="{{ url_for('poll.vote') }}">Add Opinion</a></li>
                     </ul>
                 </li>

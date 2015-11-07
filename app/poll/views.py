@@ -33,7 +33,7 @@ def vote():
         post.prompt = Prompt.query.filter_by(id=form.prompt.data).first()
         db.session.add(post)
         flash('Submitted')
-        return redirect(url_for('poll.opinions'))
+        return redirect(url_for('poll.todays_opinions'))
 
     return render_template('poll/poll.html', form=form)
 
