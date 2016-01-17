@@ -41,7 +41,7 @@ def index():
 @main.route('/lastfmmerge')
 def lastfmmerge():
     info = {'info' : [] }
-    with open('app/lastfm/jehst.json') as bieber:
+    with open('app/lastfm/kimbers.json') as bieber:
         data = json.load(bieber)
 
         print data 
@@ -119,6 +119,16 @@ def jehst():
     least_listened = LastFmArtist.query.filter_by(referrer=bieber).order_by(LastFmArtist.artist_listens.asc()).first() 
 
     title = "Jehst's Journey into Obscurity"
+    return render_template('lastfm.html', title=title, bieber=bieber, most_listens=most_listened.artist_listens, least_listens=least_listened.artist_listens)
+
+@main.route('/kimbers')
+def kimbers():
+    bieber = Artist.query.filter_by(name="Kimber's Men").first()
+    all_of_them = LastFmArtist.query.filter_by(referrer=bieber).all()
+    most_listened = LastFmArtist.query.filter_by(referrer=bieber).order_by(LastFmArtist.artist_listens.desc()).first()
+    least_listened = LastFmArtist.query.filter_by(referrer=bieber).order_by(LastFmArtist.artist_listens.asc()).first() 
+
+    title = "Kimber's Men Journey into Obscurity"
     return render_template('lastfm.html', title=title, bieber=bieber, most_listens=most_listened.artist_listens, least_listens=least_listened.artist_listens)
 
 @main.route('/bigstyle', methods=['GET', 'POST'])
