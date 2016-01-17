@@ -452,6 +452,33 @@ class Comment(db.Model):
             raise ValidationError('comment does not have a body')
         return Comment(body=body)
 
+class Artist(db.Model):
+    __tablename__ = 'artists'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.Text)
+    children = db.relationship('LastFmArtist', backref='referrer', lazy='dynamic')
+
+    def __str__(self):
+        return self.name
+
+class LastFmArtist(db.Model):
+    __tablename__ = 'lastfm'
+    id = db.Column(db.Integer, primary_key=True)
+    referrer_id = db.Column(db.Integer, db.ForeignKey('artists.id'))
+    artist_url = db.Column(db.Text)
+    artist_listens = db.Column(db.Integer())
+    artist = db.Column(db.Text)
+    top_track = db.Column(db.Text)
+    similar_artist = db.Column(db.Text)
+    genre = db.Column(db.Text)
+    img_url = db.Column(db.Text)
+    top_track_listens = db.Column(db.Text)
+    similar_artist_url = db.Column(db.Text)
+
+    def __repr__(self):
+        return self.artist
+
+
 
 db.event.listen(Comment.body, 'set', Comment.on_changed_body)
 

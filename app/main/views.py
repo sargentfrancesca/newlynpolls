@@ -6,9 +6,10 @@ from . import main
 from .forms import EditProfileForm, EditProfileAdminForm, PostForm,\
     CommentForm, EventForm, PromptForm
 from .. import db
-from ..models import Permission, Role, User, Post, Comment, Event, Prompt, PromptEvent
+from ..models import Permission, Role, User, Post, Comment, Event, Prompt, PromptEvent, Artist, LastFmArtist
 from ..decorators import admin_required, permission_required
 from sqlalchemy.sql.expression import func, select
+import json
 
 
 @main.after_app_request
@@ -36,6 +37,67 @@ def server_shutdown():
 @main.route('/', methods=['GET', 'POST'])
 def index():    
     return render_template('index.html')
+
+@main.route('/lastfmmerge')
+def lastfmmerge():
+    info = {'info' : [] }
+    with open('app/lastfm/biebs.json') as bieber:
+        data = json.load(bieber)
+
+        print data 
+
+        referrer = ''
+        for i, d in enumerate(data):
+            if i == 0:
+                ref_artist = Artist()
+                ref_artist.name = d['artist']
+                referrer = d['artist']
+
+                db.session.add(ref_artist)
+                db.session.commit()
+
+                entry = LastFmArtist()
+                entry.artist_url = d['arist_url']
+                entry.artist_listens = d['artist_listens']
+                entry.artist = d['artist']
+                entry.top_track = d['top_track']
+                entry.similar_artist = d['similar_artist']
+                entry.genre = d['genre']
+                entry.img_url = d['img_url']
+                entry.top_track_listens = d['top_track_listens']
+                entry.similar_artist_url = d['similar_artist_url']
+
+                db.session.add(entry)
+                db.session.commit()
+                
+
+                
+            else:
+                entry = LastFmArtist()
+                bieb = Artist.query.filter_by(name=referrer).first()
+                entry.referrer_id = bieb.id
+                entry.artist_url = d['arist_url']
+                entry.artist_listens = d['artist_listens']
+                entry.artist = d['artist']
+                entry.top_track = d['top_track']
+                entry.similar_artist = d['similar_artist']
+                entry.genre = d['genre']
+                entry.img_url = d['img_url']
+                entry.top_track_listens = d['top_track_listens']
+                entry.similar_artist_url = d['similar_artist_url']
+
+                db.session.add(entry)
+                db.session.commit()
+    return "Done"
+
+@main.route('/bieber')
+def bieber():
+    bieber = Artist.query.filter_by(name="Justin Bieber").first()
+    all_of_them = LastFmArtist.query.filter_by(referrer=bieber).all()
+    most_listened = LastFmArtist.query.filter_by(referrer=bieber).order_by(LastFmArtist.artist_listens.desc()).first()
+    least_listened = LastFmArtist.query.filter_by(referrer=bieber).order_by(LastFmArtist.artist_listens.asc()).first() 
+
+    return render_template('lastfm.html', bieber=bieber, most_listens=most_listened.artist_listens, least_listens=least_listened.artist_listens)
 
 @main.route('/bigstyle', methods=['GET', 'POST'])
 def poll():

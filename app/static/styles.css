@@ -150,5 +150,10 @@ a.current {
     color: #9b59b6 !important;
 }
 
+.table tr,
+.table td{
+    background: #fff !important;
+}
+
 
 
