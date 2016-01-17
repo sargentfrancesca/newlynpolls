@@ -41,7 +41,7 @@ def index():
 @main.route('/lastfmmerge')
 def lastfmmerge():
     info = {'info' : [] }
-    with open('app/lastfm/biebs.json') as bieber:
+    with open('app/lastfm/jehst.json') as bieber:
         data = json.load(bieber)
 
         print data 
@@ -97,7 +97,29 @@ def bieber():
     most_listened = LastFmArtist.query.filter_by(referrer=bieber).order_by(LastFmArtist.artist_listens.desc()).first()
     least_listened = LastFmArtist.query.filter_by(referrer=bieber).order_by(LastFmArtist.artist_listens.asc()).first() 
 
-    return render_template('lastfm.html', bieber=bieber, most_listens=most_listened.artist_listens, least_listens=least_listened.artist_listens)
+    title = "Justin Bieber's Journey into Obscurity"
+
+    return render_template('lastfm.html', title=title, bieber=bieber, most_listens=most_listened.artist_listens, least_listens=least_listened.artist_listens)
+
+@main.route('/aaf')
+def aaf():
+    bieber = Artist.query.filter_by(name="Alien Ant Farm").first()
+    all_of_them = LastFmArtist.query.filter_by(referrer=bieber).all()
+    most_listened = LastFmArtist.query.filter_by(referrer=bieber).order_by(LastFmArtist.artist_listens.desc()).first()
+    least_listened = LastFmArtist.query.filter_by(referrer=bieber).order_by(LastFmArtist.artist_listens.asc()).first() 
+
+    title = "Alien Ant Farm's Journey into Obscurity"
+    return render_template('lastfm.html', title=title, bieber=bieber, most_listens=most_listened.artist_listens, least_listens=least_listened.artist_listens)
+
+@main.route('/jehst')
+def jehst():
+    bieber = Artist.query.filter_by(name="Jehst").first()
+    all_of_them = LastFmArtist.query.filter_by(referrer=bieber).all()
+    most_listened = LastFmArtist.query.filter_by(referrer=bieber).order_by(LastFmArtist.artist_listens.desc()).first()
+    least_listened = LastFmArtist.query.filter_by(referrer=bieber).order_by(LastFmArtist.artist_listens.asc()).first() 
+
+    title = "Jehst's Journey into Obscurity"
+    return render_template('lastfm.html', title=title, bieber=bieber, most_listens=most_listened.artist_listens, least_listens=least_listened.artist_listens)
 
 @main.route('/bigstyle', methods=['GET', 'POST'])
 def poll():
