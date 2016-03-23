@@ -4,7 +4,7 @@ from wtforms import StringField, TextAreaField, BooleanField, SelectField,\
 from wtforms.validators import Required, Length, Email, Regexp
 from wtforms import ValidationError
 from flask.ext.pagedown.fields import PageDownField
-from ..models import Role, User, Prompt, Event, PromptEvent
+from ..models import Role, User, Prompt, Event, PromptEvent, Location
 from random import randint
 
 class NameForm(Form):
@@ -13,9 +13,10 @@ class NameForm(Form):
 
 
 class EditProfileForm(Form):
-    name = StringField('Real name', validators=[Length(0, 64)])
-    location = StringField('Location', validators=[Length(0, 64)])
-    about_me = TextAreaField('About me')
+    name = StringField('Your Institution/Organisation/Collective/Individual name', validators=[Length(0, 64)])
+    location = StringField('Your Location', validators=[Length(0, 64)])
+    about_me = TextAreaField('About you')
+    user_type = SelectField('Your Profile Type', choices=[("institution", "Institution"), ("organisation", "Organisation"), ("collective", "Collective"), ("individual", "Individual"), ("other", "Other")])
     submit = SubmitField('Submit')
 
 
@@ -28,9 +29,10 @@ class EditProfileAdminForm(Form):
                                           'numbers, dots or underscores')])
     confirmed = BooleanField('Confirmed')
     role = SelectField('Role', coerce=int)
-    name = StringField('Real name', validators=[Length(0, 64)])
+    name = StringField('Your Institution/Organisation/Collective/Individual name', validators=[Length(0, 64)])
     location = StringField('Location', validators=[Length(0, 64)])
-    about_me = TextAreaField('About me')
+    about_me = TextAreaField('About you')
+    user_type = SelectField('Your Profile Type', choices=[("institution", "Institution"), ("organisation", "Organisation"), ("collective", "Collective"), ("individual", "Individual"), ("other", "Other")])
     submit = SubmitField('Submit')
 
     def __init__(self, user, *args, **kwargs):
@@ -76,18 +78,25 @@ class CommentForm(Form):
     submit = SubmitField('Submit')
 
 class EventForm(Form):
-    location = StringField('Location', validators=[Required()])
-    date = StringField('Event Date')
+    location = StringField('Location Name', validators=[Required()])
+    date_start = StringField('Event Start Date')
+    date_end = StringField('Event End Date')
+    current = BooleanField('This is our current event (all entries will refer to this, and will appear as default)')
+    event_type = SelectField('Event Type', choices=[("exhibition", "Exhibition"), ("installation", "Installation"), ("workshop", "Workshop"), ("other", "Other")])
+    submit = SubmitField('Submit')
+
+
+class CollectionForm(Form):
+    name = StringField('Collection Name or Alias', validators=[Required()])
     prompts = SelectMultipleField('Select Prompts', coerce=int, option_widget=None)
-    current = BooleanField('This is the current event (all entries will refer to this)')
+    public = BooleanField('This Collection can be seen and chosen by others')
     submit = SubmitField('Submit')
 
     def __init__(self, user, *args, **kwargs):
-        super(EventForm, self).__init__(*args, **kwargs)
+        super(CollectionForm, self).__init__(*args, **kwargs)
         self.prompts.choices = [(prompt.id, prompt.text)
                              for prompt in Prompt.query.order_by(Prompt.text).all()]
         self.user = user
-
 
 class PromptForm(Form):
     text = TextAreaField('Prompt Text', validators=[Required()])

@@ -19,6 +19,7 @@ class Permission:
     ADMINISTER = 0x80
 
 
+# Roles for users of the site - by default, new signups are 'Users' - these will be the institution, collective, or individual.
 class Role(db.Model):
     __tablename__ = 'roles'
     id = db.Column(db.Integer, primary_key=True)
@@ -61,6 +62,7 @@ class Follow(db.Model):
     timestamp = db.Column(db.DateTime, default=datetime.utcnow)
 
 
+# Profile for the institution/organisation, collective or individual. Keeps flasky's methods for possible social media aspect in the future
 class User(UserMixin, db.Model):
     __tablename__ = 'users'
     id = db.Column(db.Integer, primary_key=True)
@@ -70,13 +72,16 @@ class User(UserMixin, db.Model):
     password_hash = db.Column(db.String(128))
     confirmed = db.Column(db.Boolean, default=True)
     name = db.Column(db.String(64))
+    user_type = db.Column(db.String(64))
     location = db.Column(db.String(64))
+    location_geo = db.Column(db.String(100))
     about_me = db.Column(db.Text())
     member_since = db.Column(db.DateTime(), default=datetime.utcnow)
     last_seen = db.Column(db.DateTime(), default=datetime.utcnow)
     avatar_hash = db.Column(db.String(32))
     posts = db.relationship('Post', backref='user', lazy='dynamic')
     events = db.relationship('Event', backref='user', lazy='dynamic')
+    locations = db.relationship('Location', backref='user', lazy='dynamic')
     current_event = db.Column(db.String(64))
     followed = db.relationship('Follow',
                                foreign_keys=[Follow.follower_id],
@@ -298,19 +303,38 @@ login_manager.anonymous_user = AnonymousUser
 def load_user(user_id):
     return User.query.get(int(user_id))
 
+# The location of the event - ie Newlyn Gallery, Port Isaac Festival - Not implemented right now
+class Location(db.Model):
+    __tablename__ = 'locations'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(64))
+    location_type = db.Column(db.String(64))
+    geometry = db.Column(db.String(64))
+    # events = db.relationship('Event', backref='location', lazy='dynamic')
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
+    
+    def __repr__(self):
+        return self.name
+
+# The event, such as an installation, workshop, residency, party
 class Event(db.Model):
     __tablename__ = 'events'
     id = db.Column(db.Integer, primary_key=True)
-    location = db.Column(db.String(64))
-    date = db.Column(db.String(64), index=True)
+    date_start = db.Column(db.String(64), index=True)
+    date_end = db.Column(db.String(64), index=True)
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
+    event_type = db.Column(db.String(64))
     posts = db.relationship('Post', backref='event', lazy='dynamic')
     prompts = db.relationship('PromptEvent', backref='event', lazy='dynamic')
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    collection_id = db.Column(db.Integer, db.ForeignKey('collections.id'))
+    location = db.Column(db.String(64))
     current = db.Column(db.Boolean, default=False)
 
-    def set_current(self):
-        events = Event.query.all()
+    # Sets the current event for the user
+    def set_current(self, user):
+        events = Event.query.filter_by(user=user).all()
 
         for e in events:
             e.current = False
@@ -327,8 +351,33 @@ class Event(db.Model):
         event = Event.query.filter_by(current=True).first()
         return event
 
+# A Collection of prompts - these are essentially curations of questions that can be reused
+class Collection(db.Model):
+    __tablename__ = 'collections'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(64), index=True)
+    description = db.Column(db.Text)
+    timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
+    user_id = db.Column(db.Integer, db.ForeignKey('collections.id'))
+    events = db.relationship('Event', backref='collections', lazy='dynamic')
+    prompts = db.relationship('CollectionPrompt', backref='collection', lazy='dynamic')
+    # Not sure about this... 
+    public = db.Column(db.Boolean)
 
+    def __repr__(self):
+        return self.name
 
+# This connects the Collection and Prompt models so that there can be many of both
+class CollectionPrompt(db.Model):
+    __tablename__ = 'collectionprompts'
+    id = db.Column(db.Integer, primary_key=True)
+    collection_id = db.Column(db.Integer, db.ForeignKey('collections.id'))
+    prompt_id = db.Column(db.Integer, db.ForeignKey('prompts.id'))
+
+    def __repr__(self):
+        return '<Prompt Event %r>' % self.prompt.text
+
+# This can be deleted soon.... Just saving for data collection
 class PromptEvent(db.Model):
     __tablename__ = 'promptevents'
     id = db.Column(db.Integer, primary_key=True)
@@ -338,14 +387,16 @@ class PromptEvent(db.Model):
     def __repr__(self):
         return '<Prompt Event %r>' % self.prompt.text
 
+# Questions to ask people
 class Prompt(db.Model):
     __tablename__ = 'prompts'
     id = db.Column(db.Integer, primary_key=True)
     text = db.Column(db.Text())
     promptevents = db.relationship('PromptEvent', backref='prompt', lazy='dynamic')
+    collections = db.relationship('CollectionPrompt', backref='prompt', lazy='dynamic')
     opinions = db.relationship('Post', backref='prompt', lazy='dynamic')
 
-
+# The Opinion
 class Post(db.Model):
     __tablename__ = 'posts'
     id = db.Column(db.Integer, primary_key=True)
@@ -362,6 +413,8 @@ class Post(db.Model):
     comments = db.relationship('Comment', backref='post', lazy='dynamic')
     platform = db.Column(db.String(64))
     browser = db.Column(db.String(64))
+    yay = db.Column(db.Integer, default=0)
+    nay = db.Column(db.Integer, default=0)
 
     @staticmethod
     def generate_fake(count=100):
@@ -451,34 +504,6 @@ class Comment(db.Model):
         if body is None or body == '':
             raise ValidationError('comment does not have a body')
         return Comment(body=body)
-
-class Artist(db.Model):
-    __tablename__ = 'artists'
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.Text)
-    children = db.relationship('LastFmArtist', backref='referrer', lazy='dynamic')
-
-    def __str__(self):
-        return self.name
-
-class LastFmArtist(db.Model):
-    __tablename__ = 'lastfm'
-    id = db.Column(db.Integer, primary_key=True)
-    referrer_id = db.Column(db.Integer, db.ForeignKey('artists.id'))
-    artist_url = db.Column(db.Text)
-    artist_listens = db.Column(db.Integer())
-    artist = db.Column(db.Text)
-    top_track = db.Column(db.Text)
-    similar_artist = db.Column(db.Text)
-    genre = db.Column(db.Text)
-    img_url = db.Column(db.Text)
-    top_track_listens = db.Column(db.Text)
-    similar_artist_url = db.Column(db.Text)
-
-    def __repr__(self):
-        return self.artist
-
-
 
 db.event.listen(Comment.body, 'set', Comment.on_changed_body)
 

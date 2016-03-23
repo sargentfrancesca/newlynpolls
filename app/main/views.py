@@ -6,7 +6,7 @@ from . import main
 from .forms import EditProfileForm, EditProfileAdminForm, PostForm,\
     CommentForm, EventForm, PromptForm
 from .. import db
-from ..models import Permission, Role, User, Post, Comment, Event, Prompt, PromptEvent, Artist, LastFmArtist
+from ..models import Permission, Role, User, Post, Comment, Event, Prompt, PromptEvent
 from ..decorators import admin_required, permission_required
 from sqlalchemy.sql.expression import func, select
 import json
@@ -37,99 +37,6 @@ def server_shutdown():
 @main.route('/', methods=['GET', 'POST'])
 def index():    
     return render_template('index.html')
-
-@main.route('/lastfmmerge')
-def lastfmmerge():
-    info = {'info' : [] }
-    with open('app/lastfm/kimbers.json') as bieber:
-        data = json.load(bieber)
-
-        print data 
-
-        referrer = ''
-        for i, d in enumerate(data):
-            if i == 0:
-                ref_artist = Artist()
-                ref_artist.name = d['artist']
-                referrer = d['artist']
-
-                db.session.add(ref_artist)
-                db.session.commit()
-
-                entry = LastFmArtist()
-                entry.artist_url = d['arist_url']
-                entry.artist_listens = d['artist_listens']
-                entry.artist = d['artist']
-                entry.top_track = d['top_track']
-                entry.similar_artist = d['similar_artist']
-                entry.genre = d['genre']
-                entry.img_url = d['img_url']
-                entry.top_track_listens = d['top_track_listens']
-                entry.similar_artist_url = d['similar_artist_url']
-
-                db.session.add(entry)
-                db.session.commit()
-                
-
-                
-            else:
-                entry = LastFmArtist()
-                bieb = Artist.query.filter_by(name=referrer).first()
-                entry.referrer_id = bieb.id
-                entry.artist_url = d['arist_url']
-                entry.artist_listens = d['artist_listens']
-                entry.artist = d['artist']
-                entry.top_track = d['top_track']
-                entry.similar_artist = d['similar_artist']
-                entry.genre = d['genre']
-                entry.img_url = d['img_url']
-                entry.top_track_listens = d['top_track_listens']
-                entry.similar_artist_url = d['similar_artist_url']
-
-                db.session.add(entry)
-                db.session.commit()
-    return "Done"
-
-@main.route('/bieber')
-def bieber():
-    bieber = Artist.query.filter_by(name="Justin Bieber").first()
-    all_of_them = LastFmArtist.query.filter_by(referrer=bieber).all()
-    most_listened = LastFmArtist.query.filter_by(referrer=bieber).order_by(LastFmArtist.artist_listens.desc()).first()
-    least_listened = LastFmArtist.query.filter_by(referrer=bieber).order_by(LastFmArtist.artist_listens.asc()).first() 
-
-    title = "Justin Bieber's Journey into Obscurity"
-
-    return render_template('lastfm.html', title=title, bieber=bieber, most_listens=most_listened.artist_listens, least_listens=least_listened.artist_listens)
-
-@main.route('/aaf')
-def aaf():
-    bieber = Artist.query.filter_by(name="Alien Ant Farm").first()
-    all_of_them = LastFmArtist.query.filter_by(referrer=bieber).all()
-    most_listened = LastFmArtist.query.filter_by(referrer=bieber).order_by(LastFmArtist.artist_listens.desc()).first()
-    least_listened = LastFmArtist.query.filter_by(referrer=bieber).order_by(LastFmArtist.artist_listens.asc()).first() 
-
-    title = "Alien Ant Farm's Journey into Obscurity"
-    return render_template('lastfm.html', title=title, bieber=bieber, most_listens=most_listened.artist_listens, least_listens=least_listened.artist_listens)
-
-@main.route('/jehst')
-def jehst():
-    bieber = Artist.query.filter_by(name="Jehst").first()
-    all_of_them = LastFmArtist.query.filter_by(referrer=bieber).all()
-    most_listened = LastFmArtist.query.filter_by(referrer=bieber).order_by(LastFmArtist.artist_listens.desc()).first()
-    least_listened = LastFmArtist.query.filter_by(referrer=bieber).order_by(LastFmArtist.artist_listens.asc()).first() 
-
-    title = "Jehst's Journey into Obscurity"
-    return render_template('lastfm.html', title=title, bieber=bieber, most_listens=most_listened.artist_listens, least_listens=least_listened.artist_listens)
-
-@main.route('/kimbers')
-def kimbers():
-    bieber = Artist.query.filter_by(name="Kimber's Men").first()
-    all_of_them = LastFmArtist.query.filter_by(referrer=bieber).all()
-    most_listened = LastFmArtist.query.filter_by(referrer=bieber).order_by(LastFmArtist.artist_listens.desc()).first()
-    least_listened = LastFmArtist.query.filter_by(referrer=bieber).order_by(LastFmArtist.artist_listens.asc()).first() 
-
-    title = "Kimber's Men Journey into Obscurity"
-    return render_template('lastfm.html', title=title, bieber=bieber, most_listens=most_listened.artist_listens, least_listens=least_listened.artist_listens)
 
 @main.route('/bigstyle', methods=['GET', 'POST'])
 def poll():
@@ -222,12 +129,14 @@ def edit_profile():
         current_user.name = form.name.data
         current_user.location = form.location.data
         current_user.about_me = form.about_me.data
+        current_user.user_type = form.user_type.data
         db.session.add(current_user)
         flash('Your profile has been updated.')
         return redirect(url_for('.user', username=current_user.username))
     form.name.data = current_user.name
     form.location.data = current_user.location
     form.about_me.data = current_user.about_me
+    form.user_type.data = current_user.user_type
     return render_template('edit_profile.html', form=form)
 
 
@@ -245,6 +154,7 @@ def edit_profile_admin(id):
         user.name = form.name.data
         user.location = form.location.data
         user.about_me = form.about_me.data
+        user.user_type = form.user_type.data
         db.session.add(user)
         flash('The profile has been updated.')
         return redirect(url_for('.user', username=user.username))
@@ -255,6 +165,8 @@ def edit_profile_admin(id):
     form.name.data = user.name
     form.location.data = user.location
     form.about_me.data = user.about_me
+    form.user_type.data = user.user_type
+
     return render_template('edit_profile.html', form=form, user=user)
 
 
@@ -321,6 +233,13 @@ def events():
 
     return render_template('events.html', events=events)
 
+@main.route('/event/<username>/all')
+def user_events(username):
+    user = User.query.filter_by(username=username).first()
+    events = Event.query.filter_by(user=user).all()
+
+    return render_template('events.html', events=events)
+
 @main.route('/event/add', methods=['GET', 'POST'])
 def postevent():
     title = 'Add an Event'
@@ -330,29 +249,30 @@ def postevent():
 
         event = Event()
         event.location = form.location.data
-        event.date = form.date.data
+        event.date_start = form.date_start.data
+        event.date_end = form.date_end.data
+        event.event_type = form.event_type.data
         event.user = current_user._get_current_object()
 
-        for prompt in form.prompts.data:
-            single = Prompt.query.get(prompt)
-            last_event = Event.query.order_by(Event.id.desc()).first()
-            event_id = (int(last_event.id))
-            event_id_1 = event_id + 1
-            check = PromptEvent.query.filter_by(prompt_id=single.id, event_id=event_id_1).first()
+        # for prompt in form.prompts.data:
+        #     single = Prompt.query.get(prompt)
+        #     last_event = Event.query.order_by(Event.id.desc()).first()
+        #     event_id = (int(last_event.id))
+        #     event_id_1 = event_id + 1
+        #     check = PromptEvent.query.filter_by(prompt_id=single.id, event_id=event_id_1).first()
 
-            if check != None:
-                pass
-            else:
-                new = PromptEvent(prompt_id=single.id, event_id=event_id_1)
+        #     if check != None:
+        #         pass
+        #     else:
+        #         new = PromptEvent(prompt_id=single.id, event_id=event_id_1)
 
-            db.session.add(new)
+            # db.session.add(new)
 
 
         current = form.current.data
-
         if current == True:
-            event.set_current()
-
+            event.set_current(current_user)
+        
         db.session.add(event)
                    
         return redirect(url_for('.index'))
@@ -377,26 +297,15 @@ def editevent(id):
 
     if form.validate_on_submit():
         event.location = form.location.data
-        event.date = form.date.data
-        event.user = current_user._get_current_object()
-
-        for prompt in form.prompts.data:
-            single = Prompt.query.get(prompt)
-
-            check = PromptEvent.query.filter_by(prompt_id=single.id, event_id=event.id).first()
-
-            if check != None:
-                pass
-            else:
-                new = PromptEvent(prompt_id=single.id, event_id=event.id)
-                db.session.add(new)
-
-        
+        event.date_start = form.date_start.data
+        event.date_end = form.date_end.data
+        event.event_type = form.event_type.data
+        event.user = current_user._get_current_object() 
         
         current = form.current.data
 
         if current == True:
-            event.set_current()
+            event.set_current(current_user._get_current_object())
 
         db.session.add(event)
 
@@ -404,17 +313,19 @@ def editevent(id):
         return redirect(url_for('.event', id=event.id))
 
     form.location.data = event.location
-    form.date.data = event.date
+    form.date_start.data = event.date_start
+    form.date_end.data = event.date_end
     form.current.data = event.current
+    form.event_type.data = event.event_type
 
     choices = []
 
-    for prompt in event.prompts:
-        prompt_id = int(prompt.prompt_id)
-        choices.append(prompt_id)
+    # for prompt in event.prompts:
+    #     prompt_id = int(prompt.prompt_id)
+    #     choices.append(prompt_id)
 
-    print choices
-    form.prompts.data = choices
+    # print choices
+    # form.prompts.data = choices
 
     return render_template('edit_post.html', form=form)
 
