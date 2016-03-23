@@ -33,8 +33,19 @@
                         Events <b class="caret"></b>
                     </a>
                     <ul class="dropdown-menu">
-                        <li><a href="{{ url_for('main.user_events', username=current_user.username) }}">View Events</a></li>
+                        <li><a href="{{ url_for('main.user_events', username=current_user.username) }}">View Your Events</a></li>
+                        <li><a href="{{ url_for('main.events') }}">View All Events</a></li>
                         <li><a href="{{ url_for('main.postevent') }}">Add Event</a></li>
+                    </ul>
+                </li>
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                        Collections <b class="caret"></b>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a href="{{ url_for('main.user_collections', username=current_user.username) }}">View Your Collections</a></li>
+                        <li><a href="{{ url_for('main.collections') }}">View All Collections</a></li>
+                        <li><a href="{{ url_for('main.postcollection') }}">Add New Collection</a></li>
                     </ul>
                 </li>
                 <li class="dropdown">
@@ -42,7 +53,8 @@
                         Prompts <b class="caret"></b>
                     </a>
                     <ul class="dropdown-menu">
-                        <li><a href="{{ url_for('main.prompts') }}">View Prompts</a></li>
+                        <li><a href="{{ url_for('main.user_prompts', username=current_user.username) }}">View Your Prompts</a></li>
+                        <li><a href="{{ url_for('main.prompts') }}">View All Prompts</a></li>
                         <li><a href="{{ url_for('main.postprompt') }}">Add Prompt</a></li>
                     </ul>
                 </li>

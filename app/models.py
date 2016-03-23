@@ -82,6 +82,7 @@ class User(UserMixin, db.Model):
     posts = db.relationship('Post', backref='user', lazy='dynamic')
     events = db.relationship('Event', backref='user', lazy='dynamic')
     locations = db.relationship('Location', backref='user', lazy='dynamic')
+    collections = db.relationship('Collection', backref='user', lazy='dynamic')
     current_event = db.Column(db.String(64))
     followed = db.relationship('Follow',
                                foreign_keys=[Follow.follower_id],
@@ -358,7 +359,7 @@ class Collection(db.Model):
     name = db.Column(db.String(64), index=True)
     description = db.Column(db.Text)
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
-    user_id = db.Column(db.Integer, db.ForeignKey('collections.id'))
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     events = db.relationship('Event', backref='collections', lazy='dynamic')
     prompts = db.relationship('CollectionPrompt', backref='collection', lazy='dynamic')
     # Not sure about this... 

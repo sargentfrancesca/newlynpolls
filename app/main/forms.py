@@ -4,7 +4,7 @@ from wtforms import StringField, TextAreaField, BooleanField, SelectField,\
 from wtforms.validators import Required, Length, Email, Regexp
 from wtforms import ValidationError
 from flask.ext.pagedown.fields import PageDownField
-from ..models import Role, User, Prompt, Event, PromptEvent, Location
+from ..models import Role, User, Prompt, Event, PromptEvent, Location, Collection
 from random import randint
 
 class NameForm(Form):
@@ -82,8 +82,14 @@ class EventForm(Form):
     date_start = StringField('Event Start Date')
     date_end = StringField('Event End Date')
     current = BooleanField('This is our current event (all entries will refer to this, and will appear as default)')
-    event_type = SelectField('Event Type', choices=[("exhibition", "Exhibition"), ("installation", "Installation"), ("workshop", "Workshop"), ("other", "Other")])
+    collection = SelectField('Prompt Collection', coerce=int)
+    event_type = SelectField('Event Type', choices=[("exhibition", "Exhibition"), ("installation", "Installation"), ("residency", "Residency"), ("workshop", "Workshop"), ("other", "Other")])
     submit = SubmitField('Submit')
+
+    def __init__(self, user, *args, **kwargs):
+        super(EventForm, self).__init__(*args, **kwargs)
+        self.collection.choices = [(collection.id, collection.name)
+                             for collection in Collection.query.order_by(Collection.name).all()]
 
 
 class CollectionForm(Form):

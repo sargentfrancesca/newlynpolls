@@ -46,7 +46,12 @@
 
 $(document).ready(function(){
     var picker = new Pikaday({
-        field: document.getElementById('date'),
+        field: document.getElementById('date_start'),
+        format: 'DD MM YY'
+    });
+
+    var picker2 = new Pikaday({
+        field: document.getElementById('date_end'),
         format: 'DD MM YY'
     });
 

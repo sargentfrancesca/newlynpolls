@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+{% import "_macros.html" as macros %}
+
+{% block title %}The General Opinion - {{ collection.name }}{% endblock %}
+
+{% block page_content %}
+
+<ul class="posts">
+    <li class="post">
+        <div class="post-thumbnail">
+        </div>
+        <div class="post-content">
+            <h2>{{ collection.name }}</h2>
+            <div class="post-date">created {{ moment(collection.timestamp).format('MMMM Do YYYY') }}</div>
+            <div class="post-author">by {{ collection.user.name }}</div>
+            <div class="post-body">
+            	{% if collection.prompts.count() > 0 %}
+            	<strong>Collection Prompts</strong><br/>
+               {% for collectpr in collection.prompts %}
+               		{{ collectpr.prompt.text }}<br/>
+               {% endfor %}
+               {% endif %}
+            </div>
+            <div class="post-footer">
+                {% if current_user == collection.user %}
+                <a href="{{ url_for('.editcollection', id=collection.id) }}">
+                    <span class="label label-primary">Edit</span>
+                </a>
+                {% elif current_user.is_administrator() %}
+                <a href="{{ url_for('.editcollection', id=collection.id) }}">
+                    <span class="label label-danger">Edit [Admin]</span>
+                </a>
+                {% endif %}
+            </div>
+        </div>
+    </li>
+</ul>
+
+{% endblock %}

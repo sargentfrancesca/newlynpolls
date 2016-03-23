@@ -4,9 +4,10 @@ from flask.ext.login import login_required, current_user
 from flask.ext.sqlalchemy import get_debug_queries
 from . import main
 from .forms import EditProfileForm, EditProfileAdminForm, PostForm,\
-    CommentForm, EventForm, PromptForm
+    CommentForm, EventForm, PromptForm, CollectionForm
 from .. import db
-from ..models import Permission, Role, User, Post, Comment, Event, Prompt, PromptEvent
+from ..models import Permission, Role, User, Post, Comment, Event, Prompt, PromptEvent, Collection,\
+    CollectionPrompt
 from ..decorators import admin_required, permission_required
 from sqlalchemy.sql.expression import func, select
 import json
@@ -227,6 +228,11 @@ def event(id):
     event = Event.query.get_or_404(id)
     return render_template('event.html', event=event)
 
+@main.route('/collection/<int:id>', methods=['GET', 'POST'])
+def collection(id):
+    collection = Collection.query.get_or_404(id)
+    return render_template('collection.html', collection=collection)
+
 @main.route('/event/all')
 def events():
     events = Event.query.all()
@@ -240,6 +246,19 @@ def user_events(username):
 
     return render_template('events.html', events=events)
 
+@main.route('/collection/all')
+def collections():
+    collections = Collection.query.all()
+
+    return render_template('collections.html', collections=collections)
+
+@main.route('/collection/<username>/all')
+def user_collections(username):
+    user = User.query.filter_by(username=username).first()
+    collections = Collection.query.filter_by(user=user).all()
+
+    return render_template('collections.html', collections=collections)
+
 @main.route('/event/add', methods=['GET', 'POST'])
 def postevent():
     title = 'Add an Event'
@@ -252,33 +271,105 @@ def postevent():
         event.date_start = form.date_start.data
         event.date_end = form.date_end.data
         event.event_type = form.event_type.data
+        event.collection = form.collection.data
         event.user = current_user._get_current_object()
-
-        # for prompt in form.prompts.data:
-        #     single = Prompt.query.get(prompt)
-        #     last_event = Event.query.order_by(Event.id.desc()).first()
-        #     event_id = (int(last_event.id))
-        #     event_id_1 = event_id + 1
-        #     check = PromptEvent.query.filter_by(prompt_id=single.id, event_id=event_id_1).first()
-
-        #     if check != None:
-        #         pass
-        #     else:
-        #         new = PromptEvent(prompt_id=single.id, event_id=event_id_1)
-
-            # db.session.add(new)
-
-
         current = form.current.data
         if current == True:
             event.set_current(current_user)
         
         db.session.add(event)
-                   
-        return redirect(url_for('.index'))
+        db.session.commit()
+        return redirect(url_for('.event', id=event.id))
     
     events = Event.query.all()
     return render_template('post_event.html', form=form, events=events, title=title)
+
+@main.route('/collection/add', methods=['GET', 'POST'])
+def postcollection():
+    title = 'Create a Collection'
+    form = CollectionForm(user=user)
+    if current_user.can(Permission.WRITE_ARTICLES) and \
+            form.validate_on_submit():
+
+        collection = Collection()
+        collection.name = form.name.data
+        collection.public = form.public.data
+        collection.user = current_user._get_current_object()
+
+        for prompt in form.prompts.data:
+            single = Prompt.query.get(prompt)
+            last_collection = Collection.query.order_by(Collection.id.desc()).first()
+            collection_id = (int(last_collection.id))
+            collection_id_1 = collection_id + 1
+            check = CollectionPrompt.query.filter_by(prompt=single, collection_id=collection_id_1).first()
+
+            print collection_id_1
+            print type(collection_id_1)
+
+            if check != None:
+                pass
+            else:
+                new = CollectionPrompt(prompt=single, collection_id=collection_id_1)
+
+            db.session.add(new)
+
+        
+        db.session.add(collection)
+        db.session.commit()
+                   
+        return redirect(url_for('.collection', id=collection.id))
+        return
+
+    return render_template('post_collection.html', form=form, title=title)
+
+@main.route('/collection/edit/<int:id>', methods=['GET', 'POST'])
+@login_required
+def editcollection(id):
+
+    collection = Collection.query.get_or_404(id)
+
+    if not current_user.can(Permission.ADMINISTER):
+        abort(403)
+    form = CollectionForm(user=user)
+
+    existing = CollectionPrompt.query.filter_by(collection_id=collection.id).all()
+
+    for e in existing:
+        db.session.delete(e)
+
+    if form.validate_on_submit():
+        collection.name = form.name.data
+        collection.public = form.public.data
+
+        for prompt in form.prompts.data:
+            single = Prompt.query.get(prompt)
+            check = CollectionPrompt.query.filter_by(prompt_id=single.id, collection_id=collection.id).first()
+
+            if check != None:
+                pass
+            else:
+                new = CollectionPrompt(prompt_id=single.id, collection_id=collection.id)
+
+            db.session.add(new)
+
+        db.session.add(collection)
+
+        flash('The collection has been updated.')
+        return redirect(url_for('.collection', id=collection.id))
+
+    form.name.data = collection.name
+    form.public.data = collection.public
+
+    choices = []
+
+    for prompt in collection.prompts:
+        prompt_id = int(prompt.prompt_id)
+        choices.append(prompt_id)
+
+    print choices
+    form.prompts.data = choices
+
+    return render_template('edit_post.html', form=form)
 
 @main.route('/event/edit/<int:id>', methods=['GET', 'POST'])
 @login_required
@@ -300,6 +391,7 @@ def editevent(id):
         event.date_start = form.date_start.data
         event.date_end = form.date_end.data
         event.event_type = form.event_type.data
+        event.collection = Collection.query.filter_by(id=form.collection.data).first()
         event.user = current_user._get_current_object() 
         
         current = form.current.data
@@ -315,8 +407,9 @@ def editevent(id):
     form.location.data = event.location
     form.date_start.data = event.date_start
     form.date_end.data = event.date_end
-    form.current.data = event.current
+    form.current.data = Collection.query.filter_by(id=form.collection.data).first()
     form.event_type.data = event.event_type
+    form.collection.data = event.collection
 
     choices = []
 
@@ -374,6 +467,12 @@ def prompt(id):
 @main.route('/prompt/all')
 def prompts():
     prompts = Prompt.query.all()
+    return render_template('prompts.html', prompts=prompts)
+
+@main.route('/prompt/<username>/all')
+def user_prompts(username):
+    user = User.query.filter_by(username=username).first()
+    prompts = Prompt.query.filter_by(user=user).all()
     return render_template('prompts.html', prompts=prompts)
 
 
