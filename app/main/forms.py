@@ -78,6 +78,7 @@ class CommentForm(Form):
     submit = SubmitField('Submit')
 
 class EventForm(Form):
+    name = StringField('Event Name', validators=[Required()])
     location = StringField('Location Name', validators=[Required()])
     date_start = StringField('Event Start Date')
     date_end = StringField('Event End Date')

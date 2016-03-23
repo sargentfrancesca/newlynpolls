@@ -46,13 +46,15 @@ def logout():
     return redirect(url_for('main.index'))
 
 
-@auth.route('/happymug', methods=['GET', 'POST'])
+@auth.route('/register', methods=['GET', 'POST'])
 def register():
     form = RegistrationForm()
     if form.validate_on_submit():
         user = User(email=form.email.data,
                     username=form.username.data,
-                    password=form.password.data)
+                    password=form.password.data,
+                    name=form.name.data,
+                    user_type=form.user_type.data)
         db.session.add(user)
         db.session.commit()
         token = user.generate_confirmation_token()

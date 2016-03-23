@@ -16,26 +16,58 @@ def home():
 
 
 @poll.route('/vote', methods=['GET', 'POST'])
-def vote():
-    form = PostForm()
+def voting():
+    user = User.query.filter_by(username="mediumra_re").first()
+    form = PostForm(user=user)
+    print form.prompts.data
     if form.validate_on_submit():
 
-        post = Post()
+        post = Post(user=user)
         post.name = form.name.data
 
         post.age = form.age.data
         post.gender = form.gender.data
         post.body = form.body.data
         post.passion = form.passion.data
-        post.event = Event.get_current()
+        post.event = Event.query.filter_by(name="The General Opinion").first()
         post.platform = request.user_agent.platform
         post.browser = request.user_agent.browser
-        post.prompt = Prompt.query.filter_by(id=form.prompt.data).first()
+        post.prompt = Prompt.query.filter_by(id=form.prompts.data).first()
+        post.user = user
         db.session.add(post)
+        db.session.commit()
         flash('Submitted')
-        return redirect(url_for('poll.todays_opinions'))
+        return redirect(url_for('poll.home'))
 
-    return render_template('poll/poll.html', form=form)
+    return render_template('poll/poll.html', form=form, user=user)
+
+@poll.route('/<username>', methods=['GET', 'POST'])
+def vote(username):
+    user = User.query.filter_by(username=username).first()
+    print "User 1", username
+    form = PostForm(user=user)
+    print form.prompts.data
+    if form.validate_on_submit():
+
+        post = Post(user=user)
+        post.name = form.name.data
+
+        post.age = form.age.data
+        post.gender = form.gender.data
+        post.body = form.body.data
+        post.passion = form.passion.data
+        post.event = Event.get_current(user=user)
+        post.platform = request.user_agent.platform
+        post.browser = request.user_agent.browser
+        print "Prompt", Prompt.query.filter_by(id=form.prompt.data).first()
+        post.prompt = Prompt.query.filter_by(id=form.prompts.data).first()
+        post.user = user
+        db.session.add(post)
+        db.session.commit()
+        flash('Submitted')
+        return redirect(url_for('poll.home'))
+
+    return render_template('poll/poll.html', form=form, user=user)
 
 
 @poll.route('/random/all')
@@ -93,9 +125,10 @@ def opinions():
 
     return render_template('poll/plain_posts.html', posts=posts)
 
-@poll.route('/today')
-def todays_opinions():
-    event = Event.get_current()
+@poll.route('/today/<username>')
+def todays_opinions(username):
+    user = User.query.filter_by(username=username).first()
+    event = Event.get_current(user)
     posts = Post.query.filter_by(event=event).order_by(func.rand()).all()
 
     return render_template('poll/plain_posts.html', posts=posts)

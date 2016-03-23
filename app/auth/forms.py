@@ -1,5 +1,5 @@
 from flask.ext.wtf import Form
-from wtforms import StringField, PasswordField, BooleanField, SubmitField
+from wtforms import StringField, PasswordField, BooleanField, SubmitField, SelectField
 from wtforms.validators import Required, Length, Email, Regexp, EqualTo
 from wtforms import ValidationError
 from ..models import User
@@ -16,13 +16,15 @@ class LoginForm(Form):
 class RegistrationForm(Form):
     email = StringField('Email', validators=[Required(), Length(1, 64),
                                            Email()])
-    username = StringField('Username', validators=[
+    username = StringField('Pick a username', validators=[
         Required(), Length(1, 64), Regexp('^[A-Za-z][A-Za-z0-9_.]*$', 0,
                                           'Usernames must have only letters, '
                                           'numbers, dots or underscores')])
+    name = StringField('Your Institution/Organisation/Collective/Individual name', validators=[Required(), Length(0, 64)])
     password = PasswordField('Password', validators=[
         Required(), EqualTo('password2', message='Passwords must match.')])
     password2 = PasswordField('Confirm password', validators=[Required()])
+    user_type = SelectField('We are a...', choices=[("institution", "Institution"), ("organisation", "Organisation"), ("collective", "Collective"), ("individual", "Individual"), ("other", "Other")], validators=[Required()])
     submit = SubmitField('Register')
 
     def validate_email(self, field):
@@ -32,6 +34,10 @@ class RegistrationForm(Form):
     def validate_username(self, field):
         if User.query.filter_by(username=field.data).first():
             raise ValidationError('Username already in use.')
+
+    def validate_name(self, field):
+        if User.query.filter_by(name=field.data).first():
+            raise ValidationError('Name already in use.')
 
 
 class ChangePasswordForm(Form):

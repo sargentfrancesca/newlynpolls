@@ -143,9 +143,9 @@ class User(UserMixin, db.Model):
         raise AttributeError('password is not a readable attribute')
 
     @staticmethod
-    def update_current():
+    def update_current(user):
         users = User.query.all()
-        event = Event.get_current()
+        event = Event.get_current(user)
         event_string = event.location
 
         for u in users:
@@ -322,6 +322,7 @@ class Location(db.Model):
 class Event(db.Model):
     __tablename__ = 'events'
     id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(64), index=True)
     date_start = db.Column(db.String(64), index=True)
     date_end = db.Column(db.String(64), index=True)
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
@@ -345,11 +346,11 @@ class Event(db.Model):
         db.session.add(self)
         db.session.commit()
 
-        User.update_current()
+        User.update_current(user)
 
     @staticmethod
-    def get_current():
-        event = Event.query.filter_by(current=True).first()
+    def get_current(user):
+        event = Event.query.filter_by(current=True, user=user).first()
         return event
 
 # A Collection of prompts - these are essentially curations of questions that can be reused
@@ -360,7 +361,7 @@ class Collection(db.Model):
     description = db.Column(db.Text)
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
-    events = db.relationship('Event', backref='collections', lazy='dynamic')
+    events = db.relationship('Event', backref='collection', lazy='dynamic')
     prompts = db.relationship('CollectionPrompt', backref='collection', lazy='dynamic')
     # Not sure about this... 
     public = db.Column(db.Boolean)

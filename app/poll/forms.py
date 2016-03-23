@@ -4,7 +4,7 @@ from wtforms import StringField, TextAreaField, BooleanField, SelectField,\
 from wtforms.validators import Required, Length, Email, Regexp
 from wtforms import ValidationError
 from flask.ext.pagedown.fields import PageDownField
-from ..models import Role, User, Prompt, Event, PromptEvent
+from ..models import Role, User, Prompt, Event, PromptEvent, CollectionPrompt
 from random import randint
 from sqlalchemy.sql.expression import func, select
 
@@ -15,15 +15,20 @@ class PostForm(Form):
     gender = SelectField('Gender', choices=[('f', 'Female'), ('m', 'Male'), ('o', 'Other'), ('p', 'Prefer Not to Say')])
     passion = StringField('Profession/Passion', validators=[Length(0, 200)])
     prompt = StringField()
+    prompts = SelectField('Select a Question', coerce=int)
     submit = SubmitField('Submit')
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, user, *args, **kwargs):
         super(PostForm, self).__init__(*args, **kwargs)
-        current_event = Event.get_current()
-        random_prompt_event = current_event.prompts.order_by(func.rand()).first()
-        random_prompt = random_prompt_event.prompt
-        self.random_prompt = random_prompt
-        self.body.label.text = ''
+        current_event = Event.get_current(user)
+        print [(collection.prompt_id, collection.prompt.text)
+                             for collection in CollectionPrompt.query.filter_by(collection=current_event.collection).all()]
+        self.prompts.choices = [(collection.prompt_id, collection.prompt.text)
+                             for collection in CollectionPrompt.query.filter_by(collection=current_event.collection).all()]
+        # random_prompt_event = current_event.prompts.order_by(func.rand()).first()
+        # random_prompt = random_prompt_event.prompt
+        # self.random_prompt = random_prompt
+        # self.body.label.text = ''
 
 
 class CommentForm(Form):

@@ -39,27 +39,27 @@ def server_shutdown():
 def index():    
     return render_template('index.html')
 
-@main.route('/bigstyle', methods=['GET', 'POST'])
-def poll():
-    form = PostForm()
-    if current_user.can(Permission.WRITE_ARTICLES) and \
-            form.validate_on_submit():
+# @main.route('/bigstyle', methods=['GET', 'POST'])
+# def poll():
+#     form = PostForm()
+#     if current_user.can(Permission.WRITE_ARTICLES) and \
+#             form.validate_on_submit():
 
-        post = Post()
-        post.name = form.name.data
-        post.age = form.age.data
-        post.gender = form.gender.data
-        post.body = form.body.data
-        post.passion = form.passion.data        
-        post.user=current_user._get_current_object()
-        post.event = Event.get_current()
-        post.platform = request.user_agent.platform
-        post.browser = request.user_agent.browser
-        db.session.add(post)
-        flash('Submitted')
-        return redirect(url_for('.poll'))
+#         post = Post()
+#         post.name = form.name.data
+#         post.age = form.age.data
+#         post.gender = form.gender.data
+#         post.body = form.body.data
+#         post.passion = form.passion.data        
+#         post.user=current_user._get_current_object()
+#         post.event = Event.get_current()
+#         post.platform = request.user_agent.platform
+#         post.browser = request.user_agent.browser
+#         db.session.add(post)
+#         flash('Submitted')
+#         return redirect(url_for('.poll'))
 
-    return render_template('poll.html', form=form)
+#     return render_template('poll.html', form=form)
 
 
 @main.route('/random/all')
@@ -267,11 +267,12 @@ def postevent():
             form.validate_on_submit():
 
         event = Event()
+        event.name = form.name.data
         event.location = form.location.data
         event.date_start = form.date_start.data
         event.date_end = form.date_end.data
         event.event_type = form.event_type.data
-        event.collection = form.collection.data
+        event.collection = Collection.query.filter_by(id=form.collection.data).first()
         event.user = current_user._get_current_object()
         current = form.current.data
         if current == True:
@@ -328,8 +329,6 @@ def editcollection(id):
 
     collection = Collection.query.get_or_404(id)
 
-    if not current_user.can(Permission.ADMINISTER):
-        abort(403)
     form = CollectionForm(user=user)
 
     existing = CollectionPrompt.query.filter_by(collection_id=collection.id).all()
@@ -377,16 +376,10 @@ def editevent(id):
 
     event = Event.query.get_or_404(id)
 
-    if not current_user.can(Permission.ADMINISTER):
-        abort(403)
     form = EventForm(user=user)
 
-    existing = PromptEvent.query.filter_by(event_id=event.id).all()
-
-    for e in existing:
-        db.session.delete(e)
-
     if form.validate_on_submit():
+        event.name = form.name.data
         event.location = form.location.data
         event.date_start = form.date_start.data
         event.date_end = form.date_end.data
@@ -404,6 +397,7 @@ def editevent(id):
         flash('The event has been updated.')
         return redirect(url_for('.event', id=event.id))
 
+    form.name.data = event.name
     form.location.data = event.location
     form.date_start.data = event.date_start
     form.date_end.data = event.date_end
@@ -412,13 +406,6 @@ def editevent(id):
     form.collection.data = event.collection
 
     choices = []
-
-    # for prompt in event.prompts:
-    #     prompt_id = int(prompt.prompt_id)
-    #     choices.append(prompt_id)
-
-    # print choices
-    # form.prompts.data = choices
 
     return render_template('edit_post.html', form=form)
 

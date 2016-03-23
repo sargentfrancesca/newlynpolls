@@ -7,7 +7,11 @@
 {% block page_content %}
 
 <div class="row-fluid">
+	{% if current_user.is_authenticated %}
+	<div class="login col-lg-2 col-lg-offset-10 col-md-3 col-md-offset-10 col-sm-2 col-sm-offset-10 col-xs-3 col-xs-offset-9"><a href="{{ url_for('main.user', username=current_user.username) }}">Admin</a></div>
+	{% else %}
 	<div class="login col-lg-2 col-lg-offset-10 col-md-3 col-md-offset-10 col-sm-2 col-sm-offset-10 col-xs-3 col-xs-offset-9"><a href="{{ url_for('auth.login') }}">Login</a></div>
+	{% endif %}
 </div>
 <div class="row">
 	<div class="titlebox col-lg-7 col-lg-offset-2 col-md-7 col-md-offset-2 col-sm-7 col-sm-offset-2 col-xs-7 col-xs-offset-2">
@@ -49,7 +53,6 @@
 		});
 
 		$('.titlebox').click(function() {
-			window.location.href = '{{url_for("poll.vote")}}'
 		})
 
 		
