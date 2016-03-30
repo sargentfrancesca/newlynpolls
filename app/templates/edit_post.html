@@ -5,7 +5,7 @@
 
 {% block page_content %}
 <div class="page-header">
-    <h1>Edit Post</h1>
+    <h1>Edit</h1>
 </div>
 <div>
     {{ wtf.quick_form(form) }}
@@ -19,7 +19,12 @@
 
 $(document).ready(function(){
     var picker = new Pikaday({
-        field: document.getElementById('date'),
+        field: document.getElementById('date_start'),
+        format: 'DD MM YY'
+    });
+
+    var picker = new Pikaday({
+        field: document.getElementById('date_end'),
         format: 'DD MM YY'
     });
 

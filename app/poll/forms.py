@@ -21,14 +21,11 @@ class PostForm(Form):
     def __init__(self, user, *args, **kwargs):
         super(PostForm, self).__init__(*args, **kwargs)
         current_event = Event.get_current(user)
-        print [(collection.prompt_id, collection.prompt.text)
-                             for collection in CollectionPrompt.query.filter_by(collection=current_event.collection).all()]
+        print current_event.name
+        print current_event.user.username
+        print CollectionPrompt.query.filter_by(collection=current_event.collection).all()
         self.prompts.choices = [(collection.prompt_id, collection.prompt.text)
                              for collection in CollectionPrompt.query.filter_by(collection=current_event.collection).all()]
-        # random_prompt_event = current_event.prompts.order_by(func.rand()).first()
-        # random_prompt = random_prompt_event.prompt
-        # self.random_prompt = random_prompt
-        # self.body.label.text = ''
 
 
 class CommentForm(Form):

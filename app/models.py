@@ -81,6 +81,7 @@ class User(UserMixin, db.Model):
     avatar_hash = db.Column(db.String(32))
     posts = db.relationship('Post', backref='user', lazy='dynamic')
     events = db.relationship('Event', backref='user', lazy='dynamic')
+    prompts = db.relationship('Prompt', backref='user', lazy='dynamic')
     locations = db.relationship('Location', backref='user', lazy='dynamic')
     collections = db.relationship('Collection', backref='user', lazy='dynamic')
     current_event = db.Column(db.String(64))
@@ -146,7 +147,7 @@ class User(UserMixin, db.Model):
     def update_current(user):
         users = User.query.all()
         event = Event.get_current(user)
-        event_string = event.location
+        event_string = event.name
 
         for u in users:
             u.current_event = event_string
@@ -318,11 +319,22 @@ class Location(db.Model):
     def __repr__(self):
         return self.name
 
+import re
+from unidecode import unidecode
+_punct_re = re.compile(r'[\t !"#$%&\'()*\-/<=>?@\[\\\]^_`{|},.]+')
+def slugify(text, delim=u'-'):
+    """Generates an ASCII-only slug."""
+    result = []
+    for word in _punct_re.split(text.lower()):
+        result.extend(unidecode(word).split())
+    return unicode(delim.join(result))
+
 # The event, such as an installation, workshop, residency, party
 class Event(db.Model):
     __tablename__ = 'events'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64), index=True)
+    name_slug = db.Column(db.String(64))
     date_start = db.Column(db.String(64), index=True)
     date_end = db.Column(db.String(64), index=True)
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
@@ -347,6 +359,12 @@ class Event(db.Model):
         db.session.commit()
 
         User.update_current(user)
+
+    def get_slug(self):
+        return slugify(self.name)
+
+    def set_slug(self):
+        self.name_slug = slugify(self.name)
 
     @staticmethod
     def get_current(user):
@@ -397,6 +415,7 @@ class Prompt(db.Model):
     promptevents = db.relationship('PromptEvent', backref='prompt', lazy='dynamic')
     collections = db.relationship('CollectionPrompt', backref='prompt', lazy='dynamic')
     opinions = db.relationship('Post', backref='prompt', lazy='dynamic')
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
 
 # The Opinion
 class Post(db.Model):

@@ -39,29 +39,6 @@ def server_shutdown():
 def index():    
     return render_template('index.html')
 
-# @main.route('/bigstyle', methods=['GET', 'POST'])
-# def poll():
-#     form = PostForm()
-#     if current_user.can(Permission.WRITE_ARTICLES) and \
-#             form.validate_on_submit():
-
-#         post = Post()
-#         post.name = form.name.data
-#         post.age = form.age.data
-#         post.gender = form.gender.data
-#         post.body = form.body.data
-#         post.passion = form.passion.data        
-#         post.user=current_user._get_current_object()
-#         post.event = Event.get_current()
-#         post.platform = request.user_agent.platform
-#         post.browser = request.user_agent.browser
-#         db.session.add(post)
-#         flash('Submitted')
-#         return redirect(url_for('.poll'))
-
-#     return render_template('poll.html', form=form)
-
-
 @main.route('/random/all')
 def randompoll():
     random_opinion = Post.query.order_by(func.rand()).first()
@@ -114,11 +91,16 @@ def opinionfilter(filt, value):
 def user(username):
     user = User.query.filter_by(username=username).first_or_404()
     page = request.args.get('page', 1, type=int)
-    pagination = user.posts.order_by(Post.timestamp.desc()).paginate(
+    pagination = user.events.order_by(Event.timestamp.desc()).paginate(
         page, per_page=current_app.config['FLASKY_POSTS_PER_PAGE'],
         error_out=False)
-    posts = pagination.items
-    return render_template('user.html', user=user, posts=posts,
+    events = pagination.items
+
+    pagination_2 = user.posts.order_by(Post.timestamp.desc()).paginate(
+        page, per_page=current_app.config['FLASKY_POSTS_PER_PAGE'],
+        error_out=False)
+    posts = pagination_2.items
+    return render_template('user.html', user=user, events=events, posts=posts,
                            pagination=pagination)
 
 
@@ -277,6 +259,7 @@ def postevent():
         current = form.current.data
         if current == True:
             event.set_current(current_user)
+        event.set_slug()
         
         db.session.add(event)
         db.session.commit()
@@ -304,8 +287,8 @@ def postcollection():
             collection_id_1 = collection_id + 1
             check = CollectionPrompt.query.filter_by(prompt=single, collection_id=collection_id_1).first()
 
-            print collection_id_1
-            print type(collection_id_1)
+            print "Collection ID", collection_id_1
+            print "Print collection type", type(collection_id_1)
 
             if check != None:
                 pass
@@ -385,7 +368,8 @@ def editevent(id):
         event.date_end = form.date_end.data
         event.event_type = form.event_type.data
         event.collection = Collection.query.filter_by(id=form.collection.data).first()
-        event.user = current_user._get_current_object() 
+        event.user = current_user._get_current_object()
+        event.set_slug() 
         
         current = form.current.data
 

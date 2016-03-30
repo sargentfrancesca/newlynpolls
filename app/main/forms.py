@@ -92,6 +92,9 @@ class EventForm(Form):
         self.collection.choices = [(collection.id, collection.name)
                              for collection in Collection.query.order_by(Collection.name).all()]
 
+    def validate_name(self, field):
+        if field.data == "The General Opinions":
+            raise ValidationError('This event is reserved, please choose another name')
 
 class CollectionForm(Form):
     name = StringField('Collection Name or Alias', validators=[Required()])

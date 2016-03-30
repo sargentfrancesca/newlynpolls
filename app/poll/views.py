@@ -11,12 +11,6 @@ from sqlalchemy.sql.expression import func, select
 
 @poll.route('/', methods=['GET', 'POST'])
 def home():
-
-    return render_template('poll/home.html')
-
-
-@poll.route('/vote', methods=['GET', 'POST'])
-def voting():
     user = User.query.filter_by(username="mediumra_re").first()
     form = PostForm(user=user)
     print form.prompts.data
@@ -29,7 +23,7 @@ def voting():
         post.gender = form.gender.data
         post.body = form.body.data
         post.passion = form.passion.data
-        post.event = Event.query.filter_by(name="The General Opinion").first()
+        post.event = Event.query.filter_by(name="The General Opinions").first()
         post.platform = request.user_agent.platform
         post.browser = request.user_agent.browser
         post.prompt = Prompt.query.filter_by(id=form.prompts.data).first()
@@ -44,7 +38,6 @@ def voting():
 @poll.route('/<username>', methods=['GET', 'POST'])
 def vote(username):
     user = User.query.filter_by(username=username).first()
-    print "User 1", username
     form = PostForm(user=user)
     print form.prompts.data
     if form.validate_on_submit():
@@ -65,7 +58,7 @@ def vote(username):
         db.session.add(post)
         db.session.commit()
         flash('Submitted')
-        return redirect(url_for('poll.home'))
+        return redirect(url_for('poll.opinions_user_event', username=user.username, event=post.event.name_slug))
 
     return render_template('poll/poll.html', form=form, user=user)
 
@@ -124,6 +117,24 @@ def opinions():
     posts = Post.query.order_by(Post.id.desc()).all()
 
     return render_template('poll/plain_posts.html', posts=posts)
+
+@poll.route('/all/<username>')
+def opinions_user(username):
+    user = User.query.filter_by(username=username).first()
+    posts = Post.query.filter_by(user=user).order_by(Post.id.desc()).all()
+
+    return render_template('poll/plain_posts.html', posts=posts)
+
+@poll.route('/<username>/<event>')
+def opinions_user_event(username, event):
+    user = User.query.filter_by(username=username).first()
+    event = Event.query.filter_by(user=user, name_slug=event).first()
+    posts = Post.query.filter_by(event=event).order_by(Post.id.desc()).all()
+
+    return render_template('poll/plain_posts.html', posts=posts)
+
+# event = Event.query.get(11)
+# print event.get_slug()
 
 @poll.route('/today/<username>')
 def todays_opinions(username):
