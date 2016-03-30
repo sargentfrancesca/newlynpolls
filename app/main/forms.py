@@ -1,4 +1,5 @@
 from flask.ext.wtf import Form
+from flask.ext.login import login_required, current_user
 from wtforms import StringField, TextAreaField, BooleanField, SelectField,\
     SubmitField, IntegerField, DateField, SelectMultipleField, HiddenField
 from wtforms.validators import Required, Length, Email, Regexp
@@ -93,8 +94,11 @@ class EventForm(Form):
                              for collection in Collection.query.order_by(Collection.name).all()]
 
     def validate_name(self, field):
-        if field.data == "The General Opinions":
-            raise ValidationError('This event is reserved, please choose another name')
+        if current_user.username == "mediumra_re":
+            pass
+        else:
+            if field.data == "The General Opinions":
+                raise ValidationError('This event is reserved, please choose another name')
 
 class CollectionForm(Form):
     name = StringField('Collection Name or Alias', validators=[Required()])
