@@ -280,25 +280,28 @@ def postcollection():
         collection.public = form.public.data
         collection.user = current_user._get_current_object()
 
+        db.session.add(collection)
+
         for prompt in form.prompts.data:
             single = Prompt.query.get(prompt)
             last_collection = Collection.query.order_by(Collection.id.desc()).first()
             collection_id = (int(last_collection.id))
             collection_id_1 = collection_id + 1
-            check = CollectionPrompt.query.filter_by(prompt=single, collection_id=collection_id_1).first()
+            check = CollectionPrompt.query.filter_by(prompt=single, collection_id=collection.id).first()
 
-            print "Collection ID", collection_id_1
+            print "Collection ID", Collection.query.get(collection_id_1)
             print "Print collection type", type(collection_id_1)
+            print single.id
 
             if check != None:
                 pass
             else:
-                new = CollectionPrompt(prompt=single, collection_id=collection_id_1)
+                new = CollectionPrompt(prompt=single, collection=collection.id)
 
             db.session.add(new)
 
         
-        db.session.add(collection)
+        
         db.session.commit()
                    
         return redirect(url_for('.collection', id=collection.id))
