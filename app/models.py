@@ -22,6 +22,7 @@ class Permission:
 # Roles for users of the site - by default, new signups are 'Users' - these will be the institution, collective, or individual.
 class Role(db.Model):
     __tablename__ = 'roles'
+    __table_args__ = {"useexisting": True}
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64), unique=True)
     default = db.Column(db.Boolean, default=False, index=True)
@@ -55,6 +56,7 @@ class Role(db.Model):
 
 class Follow(db.Model):
     __tablename__ = 'follows'
+    __table_args__ = {"useexisting": True}
     follower_id = db.Column(db.Integer, db.ForeignKey('users.id'),
                             primary_key=True)
     followed_id = db.Column(db.Integer, db.ForeignKey('users.id'),
