@@ -274,7 +274,7 @@ div.submit-stuff {
 	color: #0000ff;
 	border: 4px solid #0000ff;
 	font-weight: 700;
-	font-size: 2vw !important;
+	font-size: 0.8vw !important;
 	text-transform: uppercase;
 	background: #fff;
 	display: block;
@@ -282,6 +282,7 @@ div.submit-stuff {
 	position: relative;
 	cursor: pointer;
 	z-index: 4;
+	word-wrap:break-word;
 }
 
 .cd-dropdown > span:after {
@@ -324,7 +325,8 @@ div.submit-stuff {
 	padding: 0 0.8em 0 0em;
 	display: block;
 	text-transform: uppercase;
-	font-size: 2vw !important;
+	font-size: 0.8vw !important;
+	word-wrap:break-word;
 	color: #0000ff;
 	cursor: pointer;
 	font-weight: 700;
