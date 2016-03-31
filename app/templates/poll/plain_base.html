@@ -12,6 +12,7 @@
 <script src="{{ url_for('static', filename='pikaday.js') }}"></script>
 <script src="{{ url_for('static', filename='pikaday.js') }}"></script>
 <scrpt src="https://cdnjs.cloudflare.com/ajax/libs/elasticsearch/9.0.0/elasticsearch.jquery.min.js"></script>
+
 {% endblock %}
 
 {% block content %}
@@ -33,6 +34,8 @@
 {% block scripts %}
 {{ super() }}
 <script src="{{ url_for('static', filename='pikaday.js') }}"></script>
+<script src="{{ url_for('static', filename='modernizr.custom.63321.js') }}"></script>
+<script src="{{ url_for('static', filename='jquery.dropdown.js') }}"></script>
 <script>
 $(document).ready(function() {
 	$('.msg').fadeOut("slow");

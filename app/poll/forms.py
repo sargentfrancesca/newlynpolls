@@ -12,7 +12,7 @@ class PostForm(Form):
     body = TextAreaField('Opinion', validators=[Required()])
     name = StringField('Name/Alias', validators=[Length(0, 200)])
     age = IntegerField('Age')
-    gender = SelectField('Gender', choices=[('f', 'Female'), ('m', 'Male'), ('o', 'Other'), ('p', 'Prefer Not to Say')])
+    gender = StringField('Gender')
     passion = StringField('Profession/Passion', validators=[Length(0, 200)])
     prompt = StringField()
     prompts = SelectField('Select a Question', coerce=int)
