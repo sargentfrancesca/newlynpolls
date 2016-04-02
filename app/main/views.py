@@ -12,6 +12,12 @@ from ..decorators import admin_required, permission_required
 from sqlalchemy.sql.expression import func, select
 import json
 
+@main.route('/set_cookie/<username>')
+def launch_cookie_insertion(username):
+    redirect_to_poll = redirect('/poll/'+username)
+    response = current_app.make_response(redirect_to_poll)  
+    response.set_cookie('presentation_mode',value='true')
+    return response
 
 @main.after_app_request
 def after_request(response):

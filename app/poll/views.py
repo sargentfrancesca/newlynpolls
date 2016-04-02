@@ -32,6 +32,7 @@ def home():
         db.session.commit()
         flash('Submitted')
         return redirect(url_for('poll.home'))
+        return redirect(url_for('poll.cheers'))
 
     return render_template('poll/poll.html', form=form, user=user)
 
@@ -58,10 +59,30 @@ def vote(username):
         db.session.add(post)
         db.session.commit()
         flash('Submitted')
-        return redirect(url_for('poll.opinions_user_event', username=user.username, event=post.event.name_slug))
+        # return redirect(url_for('poll.opinions_user_event', username=user.username, event=post.event.name_slug))
+        return redirect(url_for('poll.cheers'))
 
     return render_template('poll/poll.html', form=form, user=user)
 
+@poll.route('/cheers/<user>/<event>')
+def cheers_user(user, event):
+    user = User.query.filter_by(username=user).first()
+    event = Event.query.filter_by(name_slug=event).first()
+
+    try:
+        if request.cookies['presentation_mode']:
+            return render_template('poll/thanks.html', type="presentation")
+    except KeyError:
+        return render_template('poll/thanks.html', type="basic")
+
+    
+@poll.route('/cheers')
+def cheers():
+    try:
+        if request.cookies['presentation_mode']:
+            return render_template('poll/thanks.html', type="presentation")
+    except KeyError:
+        return render_template('poll/thanks.html', type="basic")
 
 @poll.route('/random/all')
 def randompoll():

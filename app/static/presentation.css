@@ -269,20 +269,22 @@ div.submit-stuff {
 
 .cd-dropdown > span {
 	width: 100%;
-	height: 67px;
-	line-height: 67px;
+	min-height: 67px;
+/*	line-height: 67px;*/
+	height: auto;
 	color: #0000ff;
 	border: 4px solid #0000ff;
 	font-weight: 700;
-	font-size: 0.8vw !important;
+	font-size: 1.8em !important;
+	word-wrap: break-word;
 	text-transform: uppercase;
 	background: #fff;
 	display: block;
-	padding: 0 50px 0 30px;
+	padding: 0 50px 0 0.3em;
 	position: relative;
 	cursor: pointer;
 	z-index: 4;
-	word-wrap:break-word;
+	
 }
 
 .cd-dropdown > span:after {
@@ -291,13 +293,13 @@ div.submit-stuff {
 	background: #0000ff;
 	right: 0px;
 	top: 0%;
-	width: 100px;
+	width: 60px;
 	text-align: center;
 	font-size: 2vw !important;
 	color: #fff;
 	padding: 0em;
-	padding-top: 0.3em;
-	height: 63px;
+	padding-top: 3%;
+	height: 100%;
 	line-height: 24px;
 }
 
@@ -311,10 +313,12 @@ div.submit-stuff {
 	padding: 0;
 	display: block;
 	position: relative;
+	word-wrap:break-word !important;
 }
 
 .cd-dropdown ul li {
 	display: block;
+	word-wrap:break-word !important;
 }
 
 .cd-dropdown ul li span {
@@ -325,8 +329,9 @@ div.submit-stuff {
 	padding: 0 0.8em 0 0em;
 	display: block;
 	text-transform: uppercase;
-	font-size: 0.8vw !important;
-	word-wrap:break-word;
+	font-size: 3vw !important;
+	word-wrap:break-word !important;
+	overflow: hidden;
 	color: #0000ff;
 	cursor: pointer;
 	font-weight: 700;

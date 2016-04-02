@@ -1,0 +1,80 @@
+{% extends "poll/plain_base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+{% import "_macros.html" as macros %}
+
+{% block title %}The General Opinion{% endblock %}
+
+{% block page_content %}
+
+<div class="row-fluid">
+</div>
+<div class="row">
+	<div class="titlebox col-lg-6 col-lg-offset-2 col-md-7 col-md-offset-2 col-sm-8 col-sm-offset-2 col-xs-12 col-xs-offset-0">
+		<div class="title-line col-lg-12"><h3>THANK YOU</h3></div>
+		{% if type == "presentation" %}
+		<div class="title-line col-lg-12"><h3>YOU MAY KEEP OR PIN UP YOUR RECEIPT</h3></div>
+		{% else %}
+		<div class="title-line col-lg-12"><h3>YOUR OPINION IS VALUABLE</h3></div>
+		{% endif %}
+	</div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+
+<script>
+	
+	$(document).ready(function() {
+
+		function marginss() {
+			$('.titlebox').css({
+				position:'absolute',
+				top: ($(window).height() - $('.titlebox').outerHeight())/2
+			});
+
+		}
+
+		marginss();
+		$(window).resize(function(){
+			marginss();
+		});
+
+		$('.titlebox').click(function() {
+			window.location.href = '{{url_for("poll.home")}}'
+		})
+
+		
+	});
+</script>
+
+<script>
+var idleTime = 0;
+
+$(document).ready(function() {
+
+	var idleInterval = setInterval(timerIncrement, 1000); // 1 minute
+
+    //Zero the idle timer on mouse movement.
+    $(this).mousemove(function (e) {
+        idleTime = 0;
+    });
+    $(this).keypress(function (e) {
+        idleTime = 0;
+    });
+
+});
+	
+
+function timerIncrement() {
+    idleTime = idleTime + 1;
+    console.log(idleTime)
+    if (idleTime > 120) { 
+       console.log("Should change")
+       window.location.href = '{{url_for("poll.home")}}'
+    }
+}
+</script>
+{{ pagedown.include_pagedown() }}
+{% endblock %}
