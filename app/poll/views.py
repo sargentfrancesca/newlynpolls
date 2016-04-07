@@ -3,11 +3,12 @@ from flask import render_template, redirect, url_for, abort, flash, request,\
 from flask.ext.login import login_required, current_user
 from flask.ext.sqlalchemy import get_debug_queries
 from . import poll
-from .forms import PostForm 
+from .forms import PostForm, DrawForm
 from .. import db
 from ..models import Permission, Role, User, Post, Comment, Event, Prompt, PromptEvent
 from ..decorators import admin_required, permission_required
 from sqlalchemy.sql.expression import func, select
+import base64
 
 @poll.route('/', methods=['GET', 'POST'])
 def home():
@@ -34,11 +35,90 @@ def home():
         return redirect(url_for('poll.home'))
         return redirect(url_for('poll.cheers'))
 
-    return render_template('poll/poll.html', form=form, user=user)
+    return render_template('poll/poll.html', form=form, user=user, draw=False)
 
-@poll.route('/talk', methods=['GET', 'POST'])
-def talk():
-    return render_template('poll/record.html')
+@poll.route('/draw', methods=['GET', 'POST'])
+def draw():
+    user = User.query.filter_by(username="francesca").first()
+    form = PostForm(user=user)
+    print form.prompts.data
+    if form.validate_on_submit():
+
+        post = Post(user=user)
+        post.name = form.name.data
+
+        post.age = form.age.data
+        post.gender = form.gender.data
+        post.body = form.body.data
+        post.passion = form.passion.data
+        post.event = Event.query.filter_by(name="The General Opinions").first()
+        post.platform = request.user_agent.platform
+        post.browser = request.user_agent.browser
+        post.prompt = Prompt.query.filter_by(id=form.prompts.data).first()
+        post.user = user
+
+        if form.image_uri.data > 0:
+            post.image_uri = form.image_uri.data
+            details_concat = ('-').join([str(form.age.data), form.gender.data, form.passion.data])
+            details_space = details_concat.split(' ')
+            deets = ('-').join(details_space).lower()
+            image_file = post.event.name_slug + deets
+            post.image_file = image_file
+            data_full = form.image_uri.data
+            data = data_full.split(',')[1]
+            fh = open("data/images/"+image_file+".png", "wb")
+            fh.write(data.decode('base64'))
+            fh.close()
+
+        db.session.add(post)
+        db.session.commit()
+        flash('Submitted')
+        return redirect(url_for('poll.home'))
+        return redirect(url_for('poll.cheers'))
+
+    return render_template('poll/poll.html', form=form, user=user, draw=True)
+
+@poll.route('/<username>/draw', methods=['GET', 'POST'])
+def draw_user(username):
+    user = User.query.filter_by(username=username).first()
+    form = PostForm(user=user)
+    print form.prompts.data
+    if form.validate_on_submit():
+
+        post = Post(user=user)
+        post.name = form.name.data
+
+        post.age = form.age.data
+        post.gender = form.gender.data
+        post.body = form.body.data
+        post.passion = form.passion.data
+        post.event = Event.get_current(user=user)
+        post.platform = request.user_agent.platform
+        post.browser = request.user_agent.browser
+        post.prompt = Prompt.query.filter_by(id=form.prompts.data).first()
+        post.user = user
+
+        post.image_uri = form.image_uri.data
+        details_concat = ('-').join([str(form.age.data), form.gender.data, form.passion.data])
+        details_space = details_concat.split(' ')
+        deets = ('-').join(details_space).lower()
+        image_file = post.event.name_slug + deets
+        post.image_file = image_file
+        data_full = form.image_uri.data
+        try:
+            data = data_full.split(',')[1]
+        except:
+            pass
+        else:
+            fh = open("data/images/"+image_file+".png", "wb")
+            fh.write(data.decode('base64'))
+            fh.close()
+        db.session.add(post)
+        db.session.commit()
+        flash('Submitted')
+        return redirect(url_for('poll.cheers'))
+
+    return render_template('poll/poll.html', form=form, user=user, draw=True)
 
 @poll.route('/<username>', methods=['GET', 'POST'])
 def vote(username):
@@ -60,13 +140,13 @@ def vote(username):
         print "Prompt", Prompt.query.filter_by(id=form.prompt.data).first()
         post.prompt = Prompt.query.filter_by(id=form.prompts.data).first()
         post.user = user
+
         db.session.add(post)
         db.session.commit()
         flash('Submitted')
-        # return redirect(url_for('poll.opinions_user_event', username=user.username, event=post.event.name_slug))
         return redirect(url_for('poll.cheers'))
 
-    return render_template('poll/poll.html', form=form, user=user)
+    return render_template('poll/poll.html', form=form, user=user, draw=False)
 
 @poll.route('/cheers/<user>/<event>')
 def cheers_user(user, event):

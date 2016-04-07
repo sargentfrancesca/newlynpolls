@@ -5,10 +5,40 @@
 {% block title %}The General Opinion{% endblock %}
 
 {% block page_content %}
+ <style>
+#drawing-mode {
+  margin-bottom: 10px;
+  vertical-align: top;
+}
+#drawing-mode-options {
+  display: inline-block;
+  vertical-align: top;
+  margin-bottom: 10px;
+  margin-top: 10px;
+  background: #f5f2f0;
+  padding: 10px;
+}
+label {
+  display: inline-block; width: 130px;
+}
+.info {
+  display: inline-block;
+  width: 25px;
+  background: #ffc;
+}
+#bd-wrapper {
+  min-width: 1500px;
+}
+</style>
+
 
 <div class="row-fluid">
 	<div class="row-fluid">
+		{% if draw %}
+		<form method="post" class="form" role="form" action="{{ url_for('.draw_user', username=user.username )}}">
+		{% else %}
 		<form method="post" class="form" role="form" action="/poll/{{user.username}}">
+		{% endif %}
 		<div class="prompt text-center col-lg-9 col-lg-offset-1 col-md-12 col-sm-12">{{ form.prompts(class="form-control cd-select") }}</div>
 	</div>
 
@@ -20,8 +50,30 @@
 		            <span class="error_message" style="color: red">{{ error }}</span>
 		        {% endfor %}
 			</div>
+	
+	
 
+		{% if draw %}
+		{{ form.hidden_tag() }}
+		<div class="row-fluid">
+			<div id="the_canvas" class="webform col-lg-12">
+				<canvas id="c" class="webform col-xs-12"></canvas>
+				<div style="display: inline-block; margin-left: 10px">
+				  <div id="save-canvas" class="btn btn-info">Save</div>
+				  <div id="clear-canvas" class="btn btn-info">Clear</div><br>
 
+				  <div id="drawing-mode-options">
+				    <label for="drawing-line-width">Line width:</label>
+				    <span class="info">30</span><input type="range" value="30" min="0" max="150" id="drawing-line-width"><br>
+
+				    <label for="drawing-color">Line color:</label>
+				    <input type="color" value="#005E7A" id="drawing-color"><br>
+				  </div>
+				</div>
+			</div>
+		</div>
+		{{ form.image_uri(class="form-control") }}
+		{% else %}
 	    <div class="row-fluid body">
 			{{ form.hidden_tag() }}
 				<div class="form-group">
@@ -34,7 +86,8 @@
 				        {% endfor %}
 				</div>
 		</div>
-
+		{% endif %}
+			
 			<div class="row-fluid">
 				<div class="form-group col-lg-4 col-md-4 col-sm-4">
 					{{ form.age(class="form-control", placeholder="Age", type="number") }}
@@ -71,76 +124,135 @@
 
 {% block scripts %}
 {{ super() }}
+{% if draw %}
 <script>
-	var idleTime = 0;
-	$(document).ready(function() {
+(function() {
+  var $ = function(id){return document.getElementById(id)};
 
-		$('#prompt').hide()
+  var canvas = this.__canvas = new fabric.Canvas('c', {
+    isDrawingMode: true
+  });
 
-        var textarea = document.getElementById("body");
-		var heightLimit = 1000; /* Maximum height: 200px */
+  var canvas_container = $('the_canvas')
 
-		textarea.oninput = function() {
-		  textarea.style.height = ""; /* Reset the height*/
-		  textarea.style.height = Math.min(textarea.scrollHeight, heightLimit) + "px";
-		};
+  	window.addEventListener('resize', resizeCanvas, false);
 
-		$('input').attr('autocomplete', 'off');		
+  	console.log(canvas_container.offsetWidth)
 
-		$( ".help" ).click(function() {
-		  $( ".about" ).toggle( "fast", function() {
-		    var visible_about = $('.about').is(":visible")
-		
-			if (visible_about) {
-				console.log(visible_about)
-				$('.form-group, h4, .webform').not('.help, .about').addClass('blurred').off('click');
+	  function resizeCanvas() {
+	    canvas.setHeight(canvas_container.clientHeight);
+	    canvas.setWidth(canvas_container.clientWidth);
+	    canvas.renderAll();
+	  }
 
-			} else {
-				$('.form-group, h4, .webform').not('.help, .about').removeClass('blurred');
-			}
-		  });
-		});
+	  // resize on init
+	  resizeCanvas();
 
-		function marginss() {
-			$('.container').css({
-				position:'absolute',
-				left: ($(window).width() - $('.container').outerWidth())/2,
-				top: ($(window).height() - $('.container').outerHeight())/8
-			});
+  fabric.Object.prototype.transparentCorners = false;
 
-			$('.about').css({
-				position:'absolute',
-				top: ($(window).height() - $('.about').outerHeight())/2
-			});
+  var drawingOptionsEl = $('drawing-mode-options'),
+      drawingColorEl = $('drawing-color'),
+      drawingLineWidthEl = $('drawing-line-width'),
+      clearEl = $('clear-canvas');
+      saveEl = $('save-canvas');
+      image_uri = $('image_uri')
 
+  clearEl.onclick = function() { canvas.clear() };
+
+  saveEl.onclick = function() {
+  	var image = canvas.toDataURL("image/png");
+  	image_uri.value = image
+  }
+
+  drawingColorEl.onchange = function() {
+    canvas.freeDrawingBrush.color = this.value;
+  };
+  drawingLineWidthEl.onchange = function() {
+    canvas.freeDrawingBrush.width = parseInt(this.value, 10) || 1;
+    this.previousSibling.innerHTML = this.value;
+  };
+
+  if (canvas.freeDrawingBrush) {
+    canvas.freeDrawingBrush.color = drawingColorEl.value;
+    canvas.freeDrawingBrush.width = parseInt(drawingLineWidthEl.value, 10) || 1;
+  }
+
+})();
+</script>
+{% else %}
+<script>
+var textarea = document.getElementById("body");
+	var heightLimit = 1000; /* Maximum height: 200px */
+
+	textarea.oninput = function() {
+	  textarea.style.height = ""; /* Reset the height*/
+	  textarea.style.height = Math.min(textarea.scrollHeight, heightLimit) + "px";
+	};
+</script>
+{% endif %}
+
+<script>
+var idleTime = 0;
+$(document).ready(function() {
+
+	$('#prompt').hide()
+
+	$('input').attr('autocomplete', 'off');		
+
+	$( ".help" ).click(function() {
+	  $( ".about" ).toggle( "fast", function() {
+	    var visible_about = $('.about').is(":visible")
+	
+		if (visible_about) {
+			console.log(visible_about)
+			$('.form-group, h4, .webform').not('.help, .about').addClass('blurred').off('click');
+
+		} else {
+			$('.form-group, h4, .webform').not('.help, .about').removeClass('blurred');
 		}
+	  });
+	});
 
-		$(window).resize(function(){
-			marginss();
+	function marginss() {
+		$('.container').css({
+			position:'absolute',
+			left: ($(window).width() - $('.container').outerWidth())/2,
+			top: ($(window).height() - $('.container').outerHeight())/8
 		});
 
-		var idleInterval = setInterval(timerIncrement, 1000); // 1 minute
+		$('.about').css({
+			position:'absolute',
+			top: ($(window).height() - $('.about').outerHeight())/2
+		});
 
-	    //Zero the idle timer on mouse movement.
-	    $(this).mousemove(function (e) {
-	        idleTime = 0;
-	    });
-	    $(this).keypress(function (e) {
-	        idleTime = 0;
-	    });
+	}
 
+	$(window).resize(function(){
 		marginss();
 	});
 
-	$( function() {	
-		$( '.cd-select' ).dropdown();
-	});
+	var idleInterval = setInterval(timerIncrement, 1000); // 1 minute
 
-	function timerIncrement() {
-    idleTime = idleTime + 1;
-    if (idleTime > 120) { 
-        window.location.href = '{{url_for("poll.home")}}'
-    }
+    //Zero the idle timer on mouse movement.
+    $(this).mousemove(function (e) {
+        idleTime = 0;
+    });
+    $(this).keypress(function (e) {
+        idleTime = 0;
+    });
+
+	marginss();
+});
+
+$( function() {	
+	$( '.cd-select' ).dropdown();
+});
+
+function timerIncrement() {
+idleTime = idleTime + 1;
+if (idleTime > 120) { 
+    window.location.href = '{{url_for("poll.home")}}'
+}
 
 }
 </script>

@@ -438,6 +438,8 @@ class Post(db.Model):
     browser = db.Column(db.String(64))
     yay = db.Column(db.Integer, default=0)
     nay = db.Column(db.Integer, default=0)
+    image_uri = db.Column(db.Text())
+    image_file = db.Column(db.Text())
 
     @staticmethod
     def generate_fake(count=100):

@@ -437,5 +437,9 @@ div.submit-stuff {
 }
 
 .webform {
-	z-index: -300;
+	z-index: 300;
+}
+
+canvas {
+	border: 4px solid #0000ff;
 }
