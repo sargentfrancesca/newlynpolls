@@ -36,6 +36,10 @@ def home():
 
     return render_template('poll/poll.html', form=form, user=user)
 
+@poll.route('/talk', methods=['GET', 'POST'])
+def talk():
+    return render_template('poll/record.html')
+
 @poll.route('/<username>', methods=['GET', 'POST'])
 def vote(username):
     user = User.query.filter_by(username=username).first()
