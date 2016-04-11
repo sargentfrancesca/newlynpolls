@@ -1,4 +1,4 @@
-from flask import render_template, redirect, url_for, abort, flash, request,\
+from flask import Flask, render_template, redirect, url_for, abort, flash, request,\
     current_app, make_response, jsonify
 from flask.ext.login import login_required, current_user
 from flask.ext.sqlalchemy import get_debug_queries
@@ -9,6 +9,7 @@ from ..models import Permission, Role, User, Post, Comment, Event, Prompt, Promp
 from ..decorators import admin_required, permission_required
 from sqlalchemy.sql.expression import func, select
 import base64
+import os
 
 @poll.route('/', methods=['GET', 'POST'])
 def home():
@@ -103,6 +104,11 @@ def draw_user(username):
         details_space = details_concat.split(' ')
         deets = ('-').join(details_space).lower()
         image_file = post.event.name_slug + deets
+	app = Flask(__name__)
+	APP_ROOT = os.path.dirname(os.path.abspath(__file__))
+	UPLOAD_FOLDER = os.path.join(APP_ROOT, '/var/www/html/newlynpolls/app/static/data/images')
+	app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
         post.image_file = image_file
         data_full = form.image_uri.data
         try:
@@ -110,7 +116,7 @@ def draw_user(username):
         except:
             pass
         else:
-            fh = open("data/images/"+image_file+".png", "wb")
+            fh = open((os.path.join(app.config['UPLOAD_FOLDER'], image_file+'.png')), "wb")
             fh.write(data.decode('base64'))
             fh.close()
         db.session.add(post)
