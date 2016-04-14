@@ -203,7 +203,9 @@ div.webform input#name {
 	margin-top: 1em;
 }
 
+#clear-canvas.button,
 div.webform input#submit {
+	border-radius: 0px;
 	font-size: 1.8em !important;
 	min-height: 1.9em !important;
 	border: 3px solid #0000ff !important;
@@ -436,8 +438,8 @@ div.submit-stuff {
 	color: #fff;
 }
 
-.webform {
-	z-index: 300;
+input {
+	z-index: -300;
 }
 
 canvas {

@@ -6,20 +6,12 @@
 
 {% block page_content %}
  <style>
-#drawing-mode {
-  margin-bottom: 10px;
-  vertical-align: top;
-}
 #drawing-mode-options {
   display: inline-block;
   vertical-align: top;
   margin-bottom: 10px;
   margin-top: 10px;
-  background: #f5f2f0;
   padding: 10px;
-}
-label {
-  display: inline-block; width: 130px;
 }
 .info {
   display: inline-block;
@@ -58,17 +50,19 @@ label {
 		<div class="row-fluid">
 			<div id="the_canvas" class="webform col-lg-12">
 				<canvas id="c" class="webform col-xs-12"></canvas>
-				<div style="display: inline-block; margin-left: 10px">
-				  <div id="save-canvas" class="btn btn-info">Save</div>
-				  <div id="clear-canvas" class="btn btn-info">Clear</div><br>
+				<div class="row-fluid">
+					<div style="col-xs-12">
+					  <div id="clear-canvas" class="btn button btn-info col-xs-3">Clear</div><br>
 
-				  <div id="drawing-mode-options">
-				    <label for="drawing-line-width">Line width:</label>
-				    <span class="info">30</span><input type="range" value="30" min="0" max="150" id="drawing-line-width"><br>
-
-				    <label for="drawing-color">Line color:</label>
-				    <input type="color" value="#005E7A" id="drawing-color"><br>
-				  </div>
+					  <div id="drawing-mode-options col-xs-9">
+					  	<div class="col-xs-4">
+						    <input type="range" value="30" min="0" max="150" id="drawing-line-width"><br>
+						</div>
+						<div class="col-xs-4">
+						    <input type="color" value="#0000ff" id="drawing-color"><br>
+						</div>
+					  </div>
+					</div>
 				</div>
 			</div>
 		</div>
@@ -154,19 +148,19 @@ label {
       drawingColorEl = $('drawing-color'),
       drawingLineWidthEl = $('drawing-line-width'),
       clearEl = $('clear-canvas');
-      saveEl = $('save-canvas');
       image_uri = $('image_uri')
 
   clearEl.onclick = function() { canvas.clear() };
 
-  saveEl.onclick = function() {
+  drawingColorEl.onchange = function() {
+    canvas.freeDrawingBrush.color = this.value;
+  };
+
+  canvas_container.onmouseup = function() {
   	var image = canvas.toDataURL("image/png");
   	image_uri.value = image
   }
 
-  drawingColorEl.onchange = function() {
-    canvas.freeDrawingBrush.color = this.value;
-  };
   drawingLineWidthEl.onchange = function() {
     canvas.freeDrawingBrush.width = parseInt(this.value, 10) || 1;
     this.previousSibling.innerHTML = this.value;
@@ -190,10 +184,55 @@ var textarea = document.getElementById("body");
 	};
 </script>
 {% endif %}
+{% if draw %}
+<script>
+function marginss() {
+$('.container').css({
+	position:'absolute',
+	left: ($(window).width() - $('.container').outerWidth())/2,
+	top: ($(window).height() - $('.container').outerHeight())/8
+});
+
+$('.about').css({
+	position:'absolute',
+	top: ($(window).height() - $('.about').outerHeight())/2
+});
+
+}
+
+$(window).resize(function(){
+	marginss();
+});
+
+marginss();
+</script>
+{% else %}
+<script>
+$('.container').css({
+	position:'absolute',
+	left: ($(window).width() - $('.container').outerWidth())/2,
+	top: ($(window).height() - $('.container').outerHeight())/8
+});
+
+$('.about').css({
+	position:'absolute',
+	top: ($(window).height() - $('.about').outerHeight())/2
+});
+
+}
+
+$(window).resize(function(){
+	marginss();
+});
+
+marginss()
+</script>
+{% endif %}
 
 <script>
 var idleTime = 0;
 $(document).ready(function() {
+
 
 	$('#prompt').hide()
 
@@ -212,25 +251,7 @@ $(document).ready(function() {
 		}
 	  });
 	});
-
-	function marginss() {
-		$('.container').css({
-			position:'absolute',
-			left: ($(window).width() - $('.container').outerWidth())/2,
-			top: ($(window).height() - $('.container').outerHeight())/8
-		});
-
-		$('.about').css({
-			position:'absolute',
-			top: ($(window).height() - $('.about').outerHeight())/2
-		});
-
-	}
-
-	$(window).resize(function(){
-		marginss();
-	});
-
+	
 	var idleInterval = setInterval(timerIncrement, 1000); // 1 minute
 
     //Zero the idle timer on mouse movement.
@@ -240,8 +261,6 @@ $(document).ready(function() {
     $(this).keypress(function (e) {
         idleTime = 0;
     });
-
-	marginss();
 });
 
 $( function() {	
