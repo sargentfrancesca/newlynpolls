@@ -40,7 +40,7 @@ def home():
 
 @poll.route('/draw', methods=['GET', 'POST'])
 def draw():
-    user = User.query.filter_by(username="francesca").first()
+    user = User.query.filter_by(username="mediumra_re").first()
     form = PostForm(user=user)
     print form.prompts.data
     if form.validate_on_submit():
