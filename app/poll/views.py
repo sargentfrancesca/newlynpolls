@@ -34,7 +34,7 @@ def home():
         db.session.commit()
         flash('Submitted')
         return redirect(url_for('poll.home'))
-        return redirect(url_for('poll.cheers'))
+        return redirect(url_for('poll.cheers_user', user=user.username, event=post.event.name_slug))
 
     return render_template('poll/poll.html', form=form, user=user, draw=False, return_to="/poll")
 
@@ -75,7 +75,7 @@ def draw():
         db.session.commit()
         flash('Submitted')
         return redirect(url_for('poll.home'))
-        return redirect(url_for('poll.cheers'))
+        return redirect(url_for('poll.cheers_user', user=user.username, event=post.event.name_slug))
 
     return render_template('poll/poll.html', form=form, user=user, draw=True, return_to="/poll/draw")
 
@@ -122,7 +122,7 @@ def draw_user(username):
         db.session.add(post)
         db.session.commit()
         flash('Submitted')
-        return redirect(url_for('poll.cheers'))
+        return redirect(url_for('poll.cheers_user', user=user.username, event=post.event.name_slug))
 
     return render_template('poll/poll.html', form=form, user=user, draw=True, return_to="/poll/" + user.username + "/draw")
 
@@ -163,7 +163,6 @@ def cheers_user(user, event):
     if request.referrer != None:
         return_to = request.referrer
     else:
-
         return_to = request.environ['PATH_INFO']
     try:
         if request.cookies['presentation_mode']:
@@ -176,8 +175,6 @@ def cheers_user_archive(user, event):
     user = User.query.filter_by(username=user).first()
     event = Event.query.filter_by(name_slug=event).first()
     posts = Post.query.filter_by(event=event).order_by(Post.id.desc()).all()
-
-    print posts
 
     try:
         if request.cookies['presentation_mode']:
