@@ -94,6 +94,10 @@ div.login a:hover {
     -webkit-transition-duration:3s;
 }
 
+div.thanks-box {
+	padding: 5em 0 5em 0;
+}
+
 p.prompt {
 	font-weight: 700;
 	font-size: 2.0em !important;
@@ -116,9 +120,33 @@ li.slide h4 {
 	margin: 0 !important;
 }
 
-li.slide div.opinion-body {
-	font-weight: 500;
-	font-size: 1.8em;
+li.slide div.opinion,
+li.slide div.author,
+li.slide div.question {	
+	font-size: 24px;
+	border: 3px solid #0000ff;
+	margin-top: 3px;
+}
+
+li.slide div.question {
+	background: #0000ff;
+}
+
+
+li.slide div.opinion p,
+li.slide div.author p,
+li.slide div.question p {
+	padding: 0.2em;
+	margin: 0.2em;
+}
+
+li.slide div.question p {
+	font-weight: 600;
+	color: #ffffff;
+}
+
+li.slide div.author p {
+	text-align: right;
 }
 
 li.slide {

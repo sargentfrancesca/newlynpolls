@@ -36,7 +36,7 @@ def home():
         return redirect(url_for('poll.home'))
         return redirect(url_for('poll.cheers'))
 
-    return render_template('poll/poll.html', form=form, user=user, draw=False)
+    return render_template('poll/poll.html', form=form, user=user, draw=False, return_to="/poll")
 
 @poll.route('/draw', methods=['GET', 'POST'])
 def draw():
@@ -77,7 +77,7 @@ def draw():
         return redirect(url_for('poll.home'))
         return redirect(url_for('poll.cheers'))
 
-    return render_template('poll/poll.html', form=form, user=user, draw=True)
+    return render_template('poll/poll.html', form=form, user=user, draw=True, return_to="/poll/draw")
 
 @poll.route('/<username>/draw', methods=['GET', 'POST'])
 def draw_user(username):
@@ -124,7 +124,7 @@ def draw_user(username):
         flash('Submitted')
         return redirect(url_for('poll.cheers'))
 
-    return render_template('poll/poll.html', form=form, user=user, draw=True)
+    return render_template('poll/poll.html', form=form, user=user, draw=True, return_to="/poll/" + user.username + "/draw")
 
 @poll.route('/<username>', methods=['GET', 'POST'])
 def vote(username):
@@ -150,20 +150,40 @@ def vote(username):
         db.session.add(post)
         db.session.commit()
         flash('Submitted')
-        return redirect(url_for('poll.cheers'))
+        return redirect(url_for('poll.cheers_user', user=user.username, event=post.event.name_slug))
 
-    return render_template('poll/poll.html', form=form, user=user, draw=False)
+    return render_template('poll/poll.html', form=form, user=user, draw=False, return_to="/poll/" + user.username)
 
 @poll.route('/cheers/<user>/<event>')
 def cheers_user(user, event):
     user = User.query.filter_by(username=user).first()
+    event = Event.get_current(user)
+    posts = Post.query.filter_by(event=event).order_by(Post.id.desc()).all()
+
+    if request.referrer != None:
+        return_to = request.referrer
+    else:
+
+        return_to = request.environ['PATH_INFO']
+    try:
+        if request.cookies['presentation_mode']:
+            return render_template('poll/thanks.html', type="presentation", posts=posts, return_to=return_to)
+    except KeyError:
+        return render_template('poll/thanks.html', type="basic", posts=posts, return_to=return_to)
+
+@poll.route('/cheers/<user>/<event>/archive')
+def cheers_user_archive(user, event):
+    user = User.query.filter_by(username=user).first()
     event = Event.query.filter_by(name_slug=event).first()
+    posts = Post.query.filter_by(event=event).order_by(Post.id.desc()).all()
+
+    print posts
 
     try:
         if request.cookies['presentation_mode']:
-            return render_template('poll/thanks.html', type="presentation")
+            return render_template('poll/thanks.html', type="presentation", posts=posts)
     except KeyError:
-        return render_template('poll/thanks.html', type="basic")
+        return render_template('poll/thanks.html', type="basic", posts=posts)
 
     
 @poll.route('/cheers')
@@ -251,6 +271,6 @@ def opinions_user_event(username, event):
 def todays_opinions(username):
     user = User.query.filter_by(username=username).first()
     event = Event.get_current(user)
-    posts = Post.query.filter_by(event=event).order_by(func.rand()).all()
+    posts = Post.query.filter_by(event=event).order_by(Post.id.desc()).all()
 
     return render_template('poll/plain_posts.html', posts=posts)

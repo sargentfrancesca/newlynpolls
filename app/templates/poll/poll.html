@@ -200,8 +200,6 @@ $('.about').css({
 	top: ($(window).height() - $('.about').outerHeight())/2
 });
 
-}
-
 $(window).resize(function(){
 	marginss();
 });
@@ -216,18 +214,23 @@ $('.container').css({
 	top: ($(window).height() - $('.container').outerHeight())/8
 });
 
+function marginss() {
+$('.container').css({
+	position:'absolute',
+	left: ($(window).width() - $('.container').outerWidth())/2,
+	// top: ($(window).height() - $('.container').outerHeight())/8
+});
+}
+
+
 $('.about').css({
 	position:'absolute',
 	top: ($(window).height() - $('.about').outerHeight())/2
 });
 
-}
-
 $(window).resize(function(){
 	marginss();
 });
-
-marginss()
 </script>
 {% endif %}
 
@@ -272,7 +275,7 @@ $( function() {
 function timerIncrement() {
 idleTime = idleTime + 1;
 if (idleTime > 120) { 
-    window.location.href = '{{url_for("poll.home")}}'
+    window.location.href = '{{ return_to }}'
 }
 
 }
