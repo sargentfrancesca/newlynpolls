@@ -145,15 +145,13 @@ class User(UserMixin, db.Model):
     def password(self):
         raise AttributeError('password is not a readable attribute')
 
-    @staticmethod
-    def update_current(user):
-        users = User.query.all()
+    
+    def update_current(self, user):
         event = Event.get_current(user)
         event_string = event.name
 
-        for u in users:
-            u.current_event = event_string
-            db.session.add(u)
+        user.current_event = event_string
+        db.session.add(user)
         db.session.commit()
 
     @password.setter
@@ -360,7 +358,7 @@ class Event(db.Model):
         db.session.add(self)
         db.session.commit()
 
-        User.update_current(user)
+        user.update_current(user)
 
     def get_slug(self):
         return slugify(self.name)

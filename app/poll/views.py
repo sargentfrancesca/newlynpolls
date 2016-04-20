@@ -14,6 +14,7 @@ import os, json
 @poll.route('/', methods=['GET', 'POST'])
 def home():
     user = User.query.filter_by(username="mediumra_re").first()
+    event = Event.query.filter_by(name="The General Opinions").first()
     form = PostForm(user=user)
     print form.prompts.data
     if form.validate_on_submit():
@@ -25,7 +26,7 @@ def home():
         post.gender = form.gender.data
         post.body = form.body.data
         post.passion = form.passion.data
-        post.event = Event.query.filter_by(name="The General Opinions").first()
+        post.event = event
         post.platform = request.user_agent.platform
         post.browser = request.user_agent.browser
         post.prompt = Prompt.query.filter_by(id=form.prompts.data).first()
@@ -36,11 +37,12 @@ def home():
         return redirect(url_for('poll.home'))
         return redirect(url_for('poll.cheers_user', user=user.username, event=post.event.name_slug))
 
-    return render_template('poll/poll.html', form=form, user=user, draw=False, return_to="/poll")
+    return render_template('poll/poll.html', form=form, user=user, event=event, draw=False, return_to="/poll")
 
 @poll.route('/draw', methods=['GET', 'POST'])
 def draw():
     user = User.query.filter_by(username="mediumra_re").first()
+    event = Event.query.filter_by(name="The General Opinions").first()
     form = PostForm(user=user)
     print form.prompts.data
     if form.validate_on_submit():
@@ -52,7 +54,7 @@ def draw():
         post.gender = form.gender.data
         post.body = form.body.data
         post.passion = form.passion.data
-        post.event = Event.query.filter_by(name="The General Opinions").first()
+        post.event = event
         post.platform = request.user_agent.platform
         post.browser = request.user_agent.browser
         post.prompt = Prompt.query.filter_by(id=form.prompts.data).first()
@@ -77,12 +79,14 @@ def draw():
         return redirect(url_for('poll.home'))
         return redirect(url_for('poll.cheers_user', user=user.username, event=post.event.name_slug))
 
-    return render_template('poll/poll.html', form=form, user=user, draw=True, return_to="/poll/draw")
+    return render_template('poll/poll.html', form=form, user=user, event=event, draw=True, return_to="/poll/draw")
 
 @poll.route('/<username>/draw', methods=['GET', 'POST'])
 def draw_user(username):
     user = User.query.filter_by(username=username).first()
     form = PostForm(user=user)
+    event = Event.get_current(user=user)
+
     print form.prompts.data
     if form.validate_on_submit():
 
@@ -93,7 +97,7 @@ def draw_user(username):
         post.gender = form.gender.data
         post.body = form.body.data
         post.passion = form.passion.data
-        post.event = Event.get_current(user=user)
+        post.event = event
         post.platform = request.user_agent.platform
         post.browser = request.user_agent.browser
         post.prompt = Prompt.query.filter_by(id=form.prompts.data).first()
@@ -124,12 +128,13 @@ def draw_user(username):
         flash('Submitted')
         return redirect(url_for('poll.cheers_user', user=user.username, event=post.event.name_slug))
 
-    return render_template('poll/poll.html', form=form, user=user, draw=True, return_to="/poll/" + user.username + "/draw")
+    return render_template('poll/poll.html', form=form, user=user, event=event, draw=True, return_to="/poll/" + user.username + "/draw")
 
 @poll.route('/<username>', methods=['GET', 'POST'])
 def vote(username):
     user = User.query.filter_by(username=username).first()
     form = PostForm(user=user)
+    event = Event.get_current(user=user)
     print form.prompts.data
     if form.validate_on_submit():
 
@@ -140,7 +145,7 @@ def vote(username):
         post.gender = form.gender.data
         post.body = form.body.data
         post.passion = form.passion.data
-        post.event = Event.get_current(user=user)
+        post.event = event
         post.platform = request.user_agent.platform
         post.browser = request.user_agent.browser
         print "Prompt", Prompt.query.filter_by(id=form.prompt.data).first()
@@ -152,7 +157,7 @@ def vote(username):
         flash('Submitted')
         return redirect(url_for('poll.cheers_user', user=user.username, event=post.event.name_slug))
 
-    return render_template('poll/poll.html', form=form, user=user, draw=False, return_to="/poll/" + user.username)
+    return render_template('poll/poll.html', form=form, user=user, event=event, draw=False, return_to="/poll/" + user.username)
 
 @poll.route('/cheers/<user>/<event>')
 def cheers_user(user, event):
