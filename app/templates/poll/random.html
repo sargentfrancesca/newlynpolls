@@ -9,7 +9,7 @@
 
     <div class="titlebox col-lg-8 col-lg-offset-2 col-md-8 col-md-offset-2 col-sm-8 col-sm-offset-2 col-xs-8 col-xs-offset-2">
 		{% if post %}
-		<p class="prompt col-lg-12 col-md-12 col-sm-12 col-xs-12"></p>
+		<p class="prompt col-xs-11"></p>
 		<hr class="seperator col-lg-12 col-md-12 col-sm-12 col-xs-12">   
 		<p class="body col-lg-12"></p>
 	    {% endif %}
@@ -25,20 +25,7 @@
 	
 	$(document).ready(function() {
 
-		$('body').css({
-			'background' : '#f37e32',
-			'color' : '#08777E'
-		});
-
-		$('.titlebox').css({
-			'-webkit-box-shadow' : '1em 1em 0px 0px rgba(243,126,50,1)',
-		    '-moz-box-shadow' : '1em 1em 0px 0px rgba(243,126,50,1)',
-		    'box-shadow' : '1em 1em 0px 0px rgba(8,119,126,1)'
-		});
-
-		$('hr.seperator').css({
-			'background' : '#08777E'
-		})
+		$('body').css({ background : '#0000ff'})
 
 		var view_type = '{{ request.randomtype }}';
 
@@ -47,7 +34,7 @@
 		} else if (view_type === 'all') {
 			data_url = '{{ url_for("poll.randomajax") }}'
 		} else {
-			data_url = '{{ url_for("poll.randomtodayajax") }}'
+			data_url = '{{ url_for("poll.randomtodayajax", username=post.user.username) }}'
 		}
 		
 

@@ -19,6 +19,13 @@ def launch_cookie_insertion(username):
     response.set_cookie('presentation_mode',value='true')
     return response
 
+@main.route('/set_cookie_draw/<username>')
+def launch_cookie_insertion_draw(username):
+    redirect_to_poll = redirect('/poll/'+username+'/draw')
+    response = current_app.make_response(redirect_to_poll)  
+    response.set_cookie('presentation_mode',value='true')
+    return response
+
 @main.after_app_request
 def after_request(response):
     for query in get_debug_queries():

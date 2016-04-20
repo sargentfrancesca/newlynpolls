@@ -167,12 +167,13 @@ li.slide {
 }
 
 div.titlebox {
-	margin-top: 1em;
+	height: auto;
 	cursor: pointer;
+	border: 4px solid #0000ff;
 }
 
 div.titlebox p {
-	text-align: center;
+	margin: 2em 2em 2em 1em;
 	font-size: 7vw;
 }
 
