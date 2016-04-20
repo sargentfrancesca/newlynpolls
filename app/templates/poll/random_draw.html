@@ -2,7 +2,7 @@
 {% import "bootstrap/wtf.html" as wtf %}
 {% import "_macros.html" as macros %}
 
-{% block title %}The General Opinion - Random Opinions{% endblock %}
+{% block title %}The General Opinion - Random Drawing{% endblock %}
 
 {% block page_content %}
 <div class="row-fluid">
@@ -47,30 +47,13 @@
 		        }).done(function (data) { 
 		        	var prompt = data.opinions[0][1]
 		        	var opinion = data.opinions[0][0]
-		        	var drawing = data.opinions[0][2]
-
-		        	if (data.opinions[0][2] != null) {
-		        		var drawing = data.opinions[0][2]
-		        	} else {
-		        		var drawing = ''
-		        	}
-
 		        	$('p.prompt').html(prompt).delay(500).animate({		        		
 		        		'opacity' : '1'	       		 
 		        	})
-
-		        	
-
-		        	if (drawing.length > 0) {
-		        		$('p.body').html('<img src="/static/data/images/'+drawing+'.png" width="100%"/>').delay(500).animate({
-			        		'opacity' : '1'		       		 
-			        	})
-		        	} else {
-		        		$('p.body').html('"'+opinion+'"').delay(500).animate({
-			        		'opacity' : '1'		       		 
-			        	})
-		        	}
-	        		
+	        		$('p.body').html('"'+opinion+'"').delay(500).animate({
+		        		
+		        		'opacity' : '1'		       		 
+		        	})
 
 	        		$('.titlebox').bind("DOMSubtreeModified",function(){
 					  marginss();

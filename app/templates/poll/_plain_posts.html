@@ -8,6 +8,9 @@
             </div>
             <div class="row-fluid opinion">                
                     <p>{{ post.body }}</p>
+                    {% if post.image_file %}
+                    <img src="/static/data/images/{{post.image_file}}.png" width="100%">
+                    {% endif %}
             </div>
              <div class="row-fluid author">
                     <p>- <em>{{ post.name }}</em></p>               

@@ -220,7 +220,7 @@ def randomtodayajax(username):
     event = Event.get_current(user)
     random_opinion = [Post.query.filter_by(event=event).order_by(func.rand()).first()]
 
-    opinions = [(r.body, r.prompt.text) for r in random_opinion]
+    opinions = [(r.body, r.prompt.text, r.image_file) for r in random_opinion]
     return jsonify(opinions=opinions)
 
 @poll.route('/random/event/<int:id>')
