@@ -468,7 +468,8 @@ class Post(db.Model):
             'id' : self.id,
             'name' : self.name,
             'body': self.body,
-            'image_file' : self.image_file
+            'image_file' : self.image_file,
+            'prompt' : self.prompt.text
         }
         return json_post
 
