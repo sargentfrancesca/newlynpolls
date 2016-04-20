@@ -120,16 +120,19 @@ li.slide h4 {
 	margin: 0 !important;
 }
 
+li.slide div.question {
+	border: 3px solid #0000ff;
+}
+
 li.slide div.opinion,
 li.slide div.author,
 li.slide div.question {	
 	font-size: 24px;
-	border: 3px solid #0000ff;
 	margin-top: 3px;
 }
 
 li.slide div.question {
-	background: #0000ff;
+	background: #ffffff;
 }
 
 
@@ -142,7 +145,7 @@ li.slide div.question p {
 
 li.slide div.question p {
 	font-weight: 600;
-	color: #ffffff;
+	color: #0000ff;
 }
 
 li.slide div.author p {
@@ -308,6 +311,10 @@ div.submit-stuff {
 	-o-filter: opacity(0.1);
 	-ms-filter: opacity(0.1);
 	filter: opacity(0.1);
+}
+
+.back {
+	margin-top: 1em;
 }
 
 .back a {
@@ -585,4 +592,21 @@ input[type=range]:focus::-ms-fill-lower {
 }
 input[type=range]:focus::-ms-fill-upper {
   background: #367ebd;
+}
+
+.vote {
+	padding: 0.8em 0 3em 0;
+}
+.yay,
+.nay {
+	background: #0000ff;
+	color: #ffffff;
+	border: 2px solid #0000ff;
+	cursor: pointer;
+}
+
+.yay-count,
+.nay-count {
+	border: 2px solid #0000ff;
+	text-align: center
 }

@@ -13,6 +13,8 @@
                     <p>- <em>{{ post.name }}</em></p>               
             </div>
             <div class="row-fluid vote">
+                <div data-post="{{post.id}}" data-vote="yay" class="yay v col-lg-1">Yay</div><div data-post="{{post.id}}" class="yay-count col-lg-1">{{post.yay}}</div>
+                <div data-post="{{post.id}}" data-vote="nay" class="nay v col-lg-1 col-lg-offset-8">Nay</div><div data-post="{{post.id}}" class="nay-count col-lg-1">{{post.nay}}</div>
             </div>
         </li>
     </div>

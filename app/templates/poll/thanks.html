@@ -7,7 +7,7 @@
 {% block page_content %}
 
 <div class="row">
-    <div class="titlebox col-lg-1 col-md-1 col-sm-1 col-xs-2 back">
+    <div class="col-lg-1 col-md-1 col-sm-1 col-xs-2 back">
         <a href="{{ return_to }}"><span class="glyphicon glyphicon-arrow-left"></span></a>
     </div>
 </div>
@@ -80,9 +80,7 @@ $(document).ready(function() {
 
 function timerIncrement() {
     idleTime = idleTime + 1;
-    console.log(idleTime)
     if (idleTime > 120) { 
-       console.log("Should change")
        window.location.href = '{{ return_to }}'
     }
 }

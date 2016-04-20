@@ -40,6 +40,36 @@
 $(document).ready(function() {
 	$('.msg').fadeOut("slow");
 })
+
+$(function() {
+$('.v').click(function() {
+	element = $(this)
+    var value = $(this).attr('data-vote');
+    var post = $(this).val('data-post');
+    var post_id = post.context.dataset.post
+    $.post('{{ url_for("poll.vote_ajax") }}', {
+        value : value,
+        post_id : post_id
+    }).done(function(data) {
+        dict = JSON.parse(data)
+        var post_id = dict['id']
+        var yay = dict['yay']
+        var nay = dict['nay']
+
+        yay_count = $('div[data-post="'+post_id+'"]', '.yay-count');
+
+        next = $(element).next('div')
+        console.log()
+
+        if ($(next).hasClass('yay-count')) {
+        	$(next).html(yay)
+        } else if ($(next).hasClass('nay-count')) {
+        	$(next).html(nay)
+        }
+
+    });
+});
+});
 </script>
 {{ moment.include_moment() }}
 {% endblock %}

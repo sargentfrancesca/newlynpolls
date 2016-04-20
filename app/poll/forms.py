@@ -26,7 +26,7 @@ class PostForm(Form):
         print current_event.user.username
         print CollectionPrompt.query.filter_by(collection=current_event.collection).all()
         self.prompts.choices = [(collection.prompt_id, collection.prompt.text)
-                             for collection in CollectionPrompt.query.filter_by(collection=current_event.collection).all()]
+                             for collection in CollectionPrompt.query.filter_by(collection=current_event.collection).order_by(CollectionPrompt.id.desc()).all()]
 
 class DrawForm(Form):
     name = StringField('Name/Alias', validators=[Length(0, 200)])

@@ -9,7 +9,7 @@ from ..models import Permission, Role, User, Post, Comment, Event, Prompt, Promp
 from ..decorators import admin_required, permission_required
 from sqlalchemy.sql.expression import func, select
 import base64
-import os
+import os, json
 
 @poll.route('/', methods=['GET', 'POST'])
 def home():
@@ -271,3 +271,23 @@ def todays_opinions(username):
     posts = Post.query.filter_by(event=event).order_by(Post.id.desc()).all()
 
     return render_template('poll/plain_posts.html', posts=posts)
+
+@poll.route('/ajax/vote', methods=['POST'])
+def vote_ajax():
+    value = request.form['value']
+    post_id = request.form['post_id']
+
+    post = Post.query.get_or_404(post_id)
+    yay = post.yay
+    nay = post.nay
+
+    if value == 'yay':
+        post.yay = yay + 1
+    else:
+        post.nay = nay + 1
+
+    db.session.add(post)
+    db.session.commit()
+
+    return json.dumps({'status':'OK','yay':post.yay,'nay':post.nay, 'id':post.id});
+
