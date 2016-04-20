@@ -163,6 +163,11 @@
   	image_uri.value = image
   }
 
+  canvas_container.onmouseout = function() {
+  	var image = canvas.toDataURL("image/png");
+  	image_uri.value = image
+  }
+
   drawingLineWidthEl.onchange = function() {
     canvas.freeDrawingBrush.width = parseInt(this.value, 10) || 1;
     this.previousSibling.innerHTML = this.value;
