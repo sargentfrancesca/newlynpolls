@@ -467,7 +467,8 @@ class Post(db.Model):
         json_post = {
             'id' : self.id,
             'name' : self.name,
-            'body': self.body
+            'body': self.body,
+            'image_file' : self.image_file
         }
         return json_post
 
