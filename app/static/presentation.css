@@ -24,11 +24,10 @@ div.login {
     font-size: 2.0em;
     padding-top: 0.5em;
     text-align: right;
-    
 }
 
 div.login a {
-	color: #08777E;
+	color: #0000ff;
 }
 
 div.login a:hover {

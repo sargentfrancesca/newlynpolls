@@ -2,8 +2,8 @@ body {
     background: #FFFFFF;
     font-family: 'Roboto', sans-serif;
     font-weight: 500;
+    color: #0000ff;
 }
-
 
 
 #slide {
@@ -42,6 +42,30 @@ div.post-tabs {
     margin-top: 16px;
 }
 
+div.navbar {
+    background: #0000ff;
+    border: 2px solid #0000ff;
+    border-radius: 0px;
+}
+
+div.navbar-header a,
+div.navbar a {
+    color: #ffffff !important;
+    font-weight: 400;
+}
+
+li.dropdown.open > a,
+li.dropdown.open,
+div.navbar li,
+div.navbar ul {
+    background: #0000ff !important;
+}
+
+li.dropdown.open > ul > li:hover,
+div.navbar li:hover {
+    background: #0000ff !important;
+}
+
 ul.posts {
     list-style-type: none;
     width: 80%;
@@ -55,10 +79,8 @@ div.post-tabs ul.posts {
 
 li.post {
     background: #fff;
-    -webkit-box-shadow: 1em 1em 0px 0px rgba(236,240,241,1);
-    -moz-box-shadow: 1em 1em 0px 0px rgba(236,240,241,1);
-    box-shadow: 1em 1em 0px 0px rgba(236,240,241,1);
-    margin: 2em 0em 0em 6em;
+    border: 2px solid #0000ff;
+    margin: 1em 0;
 }
 ul.posts li.post {
     padding: 8px;
