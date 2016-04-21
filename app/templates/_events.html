@@ -5,13 +5,15 @@
         </div>
         <div class="post-content">
             <div class="post-date">created {{ moment(event.timestamp).fromNow() }}</div>
-            <div class="post-author">{{ event.date }} @ {{ event.location }}</div>
+            <div class="post-author">{{ event.name }} @ <em>{{ event.location }}</em></div>
             <div class="post-body">
-            	{% if event.prompts.count() > 0 %}
-            	<strong>Event Prompts</strong><br/>
-               {% for promptev in event.prompts %}
-               		{{ promptev.prompt.text }}<br/>
-               {% endfor %}
+            	{% if event.collection %}
+            	<strong>Event Prompts</strong> : {{ event.collection.name }}<br/>
+                <ul>
+                {% for prompt in event.collection.prompts %}
+                    <li>{{ prompt.prompt.text }}</li>
+                {% endfor %}
+                </ul>
                {% endif %}
             </div>
             <div class="post-footer">
